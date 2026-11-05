@@ -1,0 +1,51 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xiguaAp6y3/moonmtx/client"
+
+import {
+  "moonbitlang/core/debug",
+  "xiguaAp6y3/moonmtx/api",
+  "xiguaAp6y3/moonmtx/events",
+  "xiguaAp6y3/moonmtx/ids",
+  "xiguaAp6y3/moonmtx/send",
+  "xiguaAp6y3/moonmtx/sync",
+}
+
+// Values
+
+// Errors
+pub(all) suberror RestoreError {
+  RestoreError(String)
+} derive(@debug.Debug)
+
+// Types and methods
+pub struct Client {
+  homeserver : String
+  store : @sync.Store
+  outbox : @send.Outbox
+  // private fields
+}
+pub fn Client::new(String, @api.Session, store? : @sync.Store, outbox? : @send.Outbox, filter? : @sync.Filter) -> Self
+pub fn Client::next_send(Self, Int64) -> (String, Prepared)?
+pub fn Client::on_send_response(Self, String, @api.Response, Int64) -> @send.Outcome
+pub fn Client::on_sync_response(Self, @api.Response) -> @sync.SyncSummary raise @api.ApiError
+pub fn Client::prepare(Self, @api.Request) -> Prepared
+pub fn Client::restore(String, @api.Session, Json, filter? : @sync.Filter) -> Self raise RestoreError
+pub fn Client::send(Self, @ids.RoomId, String, Json) -> String
+pub fn Client::send_message(Self, @ids.RoomId, @events.MessageContent) -> String
+pub fn Client::send_text(Self, @ids.RoomId, String) -> String
+pub fn Client::session(Self) -> @api.Session
+pub fn Client::set_session(Self, @api.Session) -> Unit
+pub fn Client::snapshot(Self) -> Json
+pub fn Client::sync_request(Self, timeout_ms? : Int) -> @api.Request
+pub fn Client::user_id(Self) -> @ids.UserId
+
+pub struct Prepared {
+  verb : String
+  url : String
+  headers : Array[(String, String)]
+  body : String?
+}
+
+// Type aliases
+
+// Traits

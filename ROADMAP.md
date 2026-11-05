@@ -87,7 +87,7 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 
 ## M7 会话与传输（client / http）
 
-- [ ] `client`：组合认证、同步、发送，暴露"下一步请求 / 处理响应"接口
+- [x] `client`：组合会话、同步存储、发送队列；`prepare` 产出带绝对 URL/令牌头/正文的请求；快照与恢复
 - [ ] `http`（native）：基于 `moonbitlang/async` 的 HTTP 传输
 - [ ] 示例：echo bot（`moon run`）
 - 验收：示例可运行；接口有文档
