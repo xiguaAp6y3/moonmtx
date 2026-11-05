@@ -1,0 +1,179 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xiguaAp6y3/moonmtx/api"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "xiguaAp6y3/moonmtx/ids",
+}
+
+// Values
+pub const M_BAD_JSON : String = "M_BAD_JSON"
+
+pub const M_FORBIDDEN : String = "M_FORBIDDEN"
+
+pub const M_LIMIT_EXCEEDED : String = "M_LIMIT_EXCEEDED"
+
+pub const M_MISSING_TOKEN : String = "M_MISSING_TOKEN"
+
+pub const M_NOT_FOUND : String = "M_NOT_FOUND"
+
+pub const M_NOT_JSON : String = "M_NOT_JSON"
+
+pub const M_UNKNOWN : String = "M_UNKNOWN"
+
+pub const M_UNKNOWN_TOKEN : String = "M_UNKNOWN_TOKEN"
+
+pub const M_UNRECOGNIZED : String = "M_UNRECOGNIZED"
+
+pub fn client_v3(Array[Seg]) -> String
+
+pub fn[T] decode_ok(Response, (Map[String, Json]) -> T raise @json.JsonDecodeError) -> T raise ApiError
+
+pub fn expect_ok(Response) -> Map[String, Json] raise ApiError
+
+pub fn login_flows_request() -> Request
+
+pub fn login_request(Credentials, device_id? : String, initial_device_display_name? : String, refresh_token? : Bool) -> Request
+
+pub fn logout_all_request() -> Request
+
+pub fn logout_request() -> Request
+
+pub fn parse_empty(Response) -> Unit raise ApiError
+
+pub fn parse_login(Response) -> Session raise ApiError
+
+pub fn parse_login_flows(Response) -> Array[LoginFlow] raise ApiError
+
+pub fn parse_refresh(Response) -> Refreshed raise ApiError
+
+pub fn parse_versions(Response) -> Versions raise ApiError
+
+pub fn parse_well_known(Response) -> Discovery
+
+pub fn parse_whoami(Response) -> WhoAmI raise ApiError
+
+pub fn path(Array[Seg]) -> String
+
+pub fn refresh_request(String) -> Request
+
+pub fn retry_delay_ms(Response) -> Int64?
+
+pub fn versions_request() -> Request
+
+pub fn well_known_base(@ids.ServerName) -> String
+
+pub fn well_known_request() -> Request
+
+pub fn whoami_request() -> Request
+
+// Errors
+pub(all) suberror ApiError {
+  Matrix(MatrixError)
+  Http(status~ : Int, body~ : String)
+  Decode(String)
+} derive(Eq, @debug.Debug)
+pub fn ApiError::to_string(Self) -> String
+pub impl Show for ApiError
+
+// Types and methods
+pub(all) enum Credentials {
+  Password(Identifier, password~ : String)
+  Token(String)
+}
+
+pub(all) enum Discovery {
+  Found(homeserver~ : String, identity_server~ : String?)
+  Ignore
+  FailPrompt(String)
+  FailError(String)
+} derive(Eq, @debug.Debug)
+
+pub(all) enum Identifier {
+  User(String)
+  ThirdParty(medium~ : String, address~ : String)
+}
+
+pub struct LoginFlow {
+  kind : String
+  raw : Map[String, Json]
+} derive(Eq, @debug.Debug)
+
+pub struct MatrixError {
+  status : Int
+  errcode : String
+  error : String
+  retry_after_ms : Int64?
+  soft_logout : Bool
+  raw : Map[String, Json]
+} derive(Eq, @debug.Debug)
+pub fn MatrixError::is_rate_limited(Self) -> Bool
+pub fn MatrixError::is_unknown_token(Self) -> Bool
+
+pub(all) enum Method {
+  Get
+  Post
+  Put
+  Delete
+} derive(Eq, @debug.Debug)
+pub fn Method::as_str(Self) -> String
+
+pub struct Refreshed {
+  access_token : String
+  refresh_token : String?
+  expires_in_ms : Int64?
+} derive(Eq)
+
+pub struct Request {
+  verb : Method
+  path : String
+  query : Array[(String, String)]
+  body : Json?
+  auth : Bool
+}
+pub fn Request::body_text(Self) -> String?
+pub fn Request::headers(Self, access_token? : String) -> Array[(String, String)]
+pub fn Request::new(Method, String, query? : Array[(String, String)], body? : Json, auth? : Bool) -> Self
+pub fn Request::url(Self, String) -> String
+
+pub struct Response {
+  status : Int
+  body : String
+  retry_after_s : Int?
+} derive(@debug.Debug)
+pub fn Response::new(Int, String, retry_after_s? : Int) -> Self
+
+pub(all) enum Seg {
+  Lit(String)
+  Var(String)
+}
+
+pub struct Session {
+  user_id : @ids.UserId
+  access_token : String
+  device_id : String
+  refresh_token : String?
+  expires_in_ms : Int64?
+  homeserver : String?
+} derive(Eq)
+pub fn Session::refreshed(Self, Refreshed) -> Self
+pub impl ToJson for Session
+pub impl @json.FromJson for Session
+
+pub struct Versions {
+  versions : Array[String]
+  unstable_features : Map[String, Bool]
+} derive(Eq, @debug.Debug)
+pub fn Versions::has_feature(Self, String) -> Bool
+pub fn Versions::supports(Self, String) -> Bool
+
+pub struct WhoAmI {
+  user_id : @ids.UserId
+  device_id : String?
+  is_guest : Bool
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits

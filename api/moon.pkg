@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/core/json",
+  "moonbitlang/core/encoding/percent",
+  "xiguaAp6y3/moonmtx/ids",
+  "xiguaAp6y3/moonmtx/internal/jsonx",
+}
+
+import {
+  "xiguaAp6y3/moonmtx/ids",
+} for "test"

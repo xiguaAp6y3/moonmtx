@@ -1,0 +1,41 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xiguaAp6y3/moonmtx/internal/jsonx"
+
+import {
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn array(Map[String, Json], String, @json.JsonPath) -> Array[Json] raise @json.JsonDecodeError
+
+pub fn build(Array[(String, Json?)]) -> Json
+
+pub fn[T : @json.FromJson] decode(Map[String, Json], String, @json.JsonPath) -> T raise @json.JsonDecodeError
+
+pub fn[T] fail(@json.JsonPath, String) -> T raise @json.JsonDecodeError
+
+pub fn int(Map[String, Json], String, @json.JsonPath) -> Int64 raise @json.JsonDecodeError
+
+pub fn object(Json, @json.JsonPath) -> Map[String, Json] raise @json.JsonDecodeError
+
+pub fn opt_bool(Map[String, Json], String, @json.JsonPath) -> Bool? raise @json.JsonDecodeError
+
+pub fn[T : @json.FromJson] opt_decode(Map[String, Json], String, @json.JsonPath) -> T? raise @json.JsonDecodeError
+
+pub fn opt_int(Map[String, Json], String, @json.JsonPath) -> Int64? raise @json.JsonDecodeError
+
+pub fn opt_object(Map[String, Json], String, @json.JsonPath) -> Map[String, Json]? raise @json.JsonDecodeError
+
+pub fn opt_string(Map[String, Json], String, @json.JsonPath) -> String? raise @json.JsonDecodeError
+
+pub fn root() -> @json.JsonPath
+
+pub fn string(Map[String, Json], String, @json.JsonPath) -> String raise @json.JsonDecodeError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

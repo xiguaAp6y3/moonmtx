@@ -37,12 +37,12 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 - [x] 长度上限 255 字节与错误类型
 - 验收：规范附录"标识符语法"的正/负样本单测
 
-## M2 请求模型与错误（api）
+## M2 请求模型与错误（api）✅
 
-- [ ] `Request`：方法、路径段百分号编码、查询串、JSON 体、是否需要令牌
-- [ ] 标准错误 `{errcode, error}` 解析，`M_LIMIT_EXCEEDED` 的 `retry_after_ms`
-- [ ] 发现：`/.well-known/matrix/client` 解析、`/versions`
-- [ ] 认证：`/login`（密码 / 令牌）、`/logout`、`/account/whoami`
+- [x] `Request`：方法、路径段百分号编码、查询串、JSON 体、是否需要令牌
+- [x] 标准错误 `{errcode, error}` 解析，`M_LIMIT_EXCEEDED` 的 `retry_after_ms`
+- [x] 发现：`/.well-known/matrix/client` 解析、`/versions`
+- [x] 认证：`/login`（密码 / 令牌）、`/logout`、`/account/whoami`、`/refresh`
 - 验收：请求构造与响应解析的夹具测试
 
 ## M3 事件模型（events）
