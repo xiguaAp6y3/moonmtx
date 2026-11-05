@@ -28,9 +28,19 @@ pub const M_UNRECOGNIZED : String = "M_UNRECOGNIZED"
 
 pub fn client_v3(Array[Seg]) -> String
 
+pub fn create_room_request(name? : String, topic? : String, preset? : Preset, public? : Bool, invite? : Array[@ids.UserId], is_direct? : Bool, room_alias_name? : String, room_version? : String, initial_state? : Array[Json]) -> Request
+
 pub fn[T] decode_ok(Response, (Map[String, Json]) -> T raise @json.JsonDecodeError) -> T raise ApiError
 
 pub fn expect_ok(Response) -> Map[String, Json] raise ApiError
+
+pub fn forget_request(@ids.RoomId) -> Request
+
+pub fn invite_request(@ids.RoomId, @ids.UserId, reason? : String) -> Request
+
+pub fn join_request(JoinTarget, via? : Array[@ids.ServerName], reason? : String) -> Request
+
+pub fn leave_request(@ids.RoomId, reason? : String) -> Request
 
 pub fn login_flows_request() -> Request
 
@@ -42,11 +52,15 @@ pub fn logout_request() -> Request
 
 pub fn parse_empty(Response) -> Unit raise ApiError
 
+pub fn parse_event_id(Response) -> @ids.EventId raise ApiError
+
 pub fn parse_login(Response) -> Session raise ApiError
 
 pub fn parse_login_flows(Response) -> Array[LoginFlow] raise ApiError
 
 pub fn parse_refresh(Response) -> Refreshed raise ApiError
+
+pub fn parse_room_id(Response) -> @ids.RoomId raise ApiError
 
 pub fn parse_versions(Response) -> Versions raise ApiError
 
@@ -56,9 +70,19 @@ pub fn parse_whoami(Response) -> WhoAmI raise ApiError
 
 pub fn path(Array[Seg]) -> String
 
+pub fn receipt_request(@ids.RoomId, @ids.EventId, receipt_type? : String, thread_id? : String) -> Request
+
+pub fn redact_request(@ids.RoomId, @ids.EventId, String, reason? : String) -> Request
+
 pub fn refresh_request(String) -> Request
 
 pub fn retry_delay_ms(Response) -> Int64?
+
+pub fn send_request(@ids.RoomId, String, String, Json) -> Request
+
+pub fn state_request(@ids.RoomId, String, Json, state_key? : String) -> Request
+
+pub fn typing_request(@ids.RoomId, @ids.UserId, Bool, timeout_ms? : Int) -> Request
 
 pub fn versions_request() -> Request
 
@@ -95,6 +119,11 @@ pub(all) enum Identifier {
   ThirdParty(medium~ : String, address~ : String)
 }
 
+pub(all) enum JoinTarget {
+  Id(@ids.RoomId)
+  Alias(@ids.RoomAlias)
+}
+
 pub struct LoginFlow {
   kind : String
   raw : Map[String, Json]
@@ -118,6 +147,12 @@ pub(all) enum Method {
   Delete
 } derive(Eq, @debug.Debug)
 pub fn Method::as_str(Self) -> String
+
+pub(all) enum Preset {
+  PrivateChat
+  TrustedPrivateChat
+  PublicChat
+} derive(Eq, @debug.Debug)
 
 pub struct Refreshed {
   access_token : String
