@@ -96,7 +96,7 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
 
 - [ ] Docker Synapse 本地互通脚本：注册 → 登录 → 建房 → 发消息 → 另一会话 `/sync` 收到
       → 断点恢复后继续同步（由 MoonBit SDK 发起请求，不是跑 SyTest 原套件）
-- [ ] README 完善、API 文档
+- [x] README 用法与包说明；`docs/upstream.md` 记录规范版本、许可证、夹具来源与相关项目
 - [ ] mooncakes.io 发布 0.1.0
 - [ ] 申报材料（人工撰写）与提交前自查
 
