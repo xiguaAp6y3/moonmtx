@@ -10,7 +10,13 @@ import {
 }
 
 // Values
+pub const SNAPSHOT_VERSION : Int = 1
+
+pub fn messages_request(@ids.RoomId, String, limit? : Int, filter? : Filter) -> @api.Request
+
 pub fn parse_filter_id(@api.Response) -> String raise @api.ApiError
+
+pub fn parse_messages(@api.Response) -> Messages raise @api.ApiError
 
 pub fn parse_sync(@api.Response) -> SyncResponse raise @api.ApiError
 
@@ -19,6 +25,13 @@ pub fn sync_request(since? : String, filter? : FilterRef, timeout_ms? : Int, ful
 pub fn upload_filter_request(@ids.UserId, Filter) -> @api.Request
 
 // Errors
+pub(all) suberror StoreError {
+  UnknownRoom(@ids.RoomId)
+  StaleToken(String)
+  BadSnapshot(String)
+} derive(Eq, @debug.Debug)
+pub fn StoreError::to_string(Self) -> String
+pub impl Show for StoreError
 
 // Types and methods
 pub struct Filter {
@@ -65,11 +78,64 @@ pub struct LeftRoom {
   account_data : Array[Json]
 } derive(Eq, @debug.Debug)
 
+pub struct Messages {
+  start : String
+  end : String?
+  chunk : Array[@events.Event]
+  state : Array[@events.Event]
+  invalid : Array[String]
+} derive(Eq, @debug.Debug)
+
+pub struct Room {
+  room_id : @ids.RoomId
+  // private fields
+}
+pub fn Room::account_data(Self, String) -> Json?
+pub fn Room::back_token(Self) -> String?
+pub fn Room::display_name(Self, String) -> String
+pub fn Room::ephemeral(Self, String) -> Json?
+pub fn Room::events(Self) -> Array[@events.Event]
+pub fn Room::gaps(Self) -> Array[String]
+pub fn Room::member_content(Self, String) -> @events.MemberContent?
+pub fn Room::member_name(Self, String) -> String
+pub fn Room::members_with(Self, @events.Membership) -> Array[String]
+pub fn Room::membership(Self) -> @events.Membership
+pub fn Room::power_levels(Self) -> @events.PowerLevels
+pub fn Room::state_event(Self, String, state_key? : String) -> @events.Event?
+pub fn Room::state_events(Self, String) -> Map[String, @events.Event]
+pub fn Room::timeline(Self) -> Array[TimelineItem]
+pub fn Room::typing(Self) -> Array[String]
+pub fn Room::unread(Self) -> (Int64, Int64)
+
 pub struct RoomSummary {
   heroes : Array[String]?
   joined_member_count : Int64?
   invited_member_count : Int64?
 } derive(Eq, @debug.Debug)
+
+pub struct RoomUpdate {
+  room_id : @ids.RoomId
+  membership : @events.Membership
+  events : Array[@events.Event]
+  gap : String?
+} derive(Eq, @debug.Debug)
+
+pub struct Store {
+  // private fields
+}
+pub fn Store::account_data(Self, String) -> Json?
+pub fn Store::apply(Self, SyncResponse) -> SyncSummary
+pub fn Store::fill_gap(Self, @ids.RoomId, Messages) -> Array[@events.Event] raise StoreError
+pub fn Store::from_json(Json) -> Self raise StoreError
+pub fn Store::invites(Self) -> Map[@ids.RoomId, Array[@events.StrippedState]]
+pub fn Store::knocks(Self) -> Map[@ids.RoomId, Array[@events.StrippedState]]
+pub fn Store::new(timeline_cap? : Int) -> Self
+pub fn Store::paginate_back(Self, @ids.RoomId, Messages) -> Array[@events.Event] raise StoreError
+pub fn Store::room(Self, @ids.RoomId) -> Room?
+pub fn Store::rooms(Self) -> Array[Room]
+pub fn Store::since(Self) -> String?
+pub fn Store::to_json(Self) -> Json
+pub impl ToJson for Store
 
 pub struct SyncResponse {
   next_batch : String
@@ -82,10 +148,22 @@ pub struct SyncResponse {
 } derive(Eq, @debug.Debug)
 pub fn SyncResponse::decode(Map[String, Json]) -> Self raise @json.JsonDecodeError
 
+pub struct SyncSummary {
+  next_batch : String
+  rooms : Array[RoomUpdate]
+  invited : Array[@ids.RoomId]
+  invalid : Array[String]
+} derive(Eq, @debug.Debug)
+
 pub struct Timeline {
   events : Array[@events.Event]
   limited : Bool
   prev_batch : String?
+} derive(Eq, @debug.Debug)
+
+pub(all) enum TimelineItem {
+  Event(@events.Event)
+  Gap(String)
 } derive(Eq, @debug.Debug)
 
 // Type aliases

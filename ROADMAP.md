@@ -63,14 +63,17 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 - [x] 单个坏事件/坏房间 ID 跳过并记入 `invalid`，不拖垮整批
 - 验收：初次同步 / 增量同步 / limited 时间线的夹具测试
 
-## M5 房间状态与可恢复同步（sync）
+## M5 房间状态与可恢复同步（sync）✅
 
-- [ ] 房间状态存储：按 `(type, state_key)` 归并，state 段先于 timeline 段应用
-- [ ] 成员表、房间名计算、power level 查询
-- [ ] 事件按 event_id 去重
-- [ ] 检查点：状态与 `next_batch` 一起序列化/恢复；令牌只在状态写入后推进
-- [ ] 缺口：`limited` 时间线记录缺口，生成 `/rooms/{id}/messages?dir=b&from=prev_batch` 回填请求
-- 验收："崩溃后从检查点恢复不丢不重"、"limited 缺口回填"的夹具测试
+- [x] 房间状态存储：按 `(type, state_key)` 归并，state 段先于 timeline 段应用
+- [x] 成员表、成员显示名去歧义、房间名计算（name → canonical_alias → heroes）、power level 查询
+- [x] 事件按 event_id 去重（每房间最近 1024 个 ID，随快照持久化）；已见过的 state 事件不再回写，避免状态倒退
+- [x] 检查点：状态与 `next_batch` 写进同一个 JSON 快照（带版本号）；重复应用同一响应无副作用
+- [x] 时间线按"块"存储：每块带向前翻页令牌，`limited` 时新块标记缺口；只整块丢弃，裁剪后仍有有效回翻令牌
+- [x] 缺口回填 `fill_gap`：翻到缺口前已知事件或房间起点即闭合，否则缺口后移；重复的 limited 响应不误开缺口
+- [x] 向前翻页 `paginate_back`；翻页附带的懒加载成员只补缺，不覆盖较新状态
+- [x] 时间线中的重定向事件对已存副本执行删减
+- 验收：`sync/store_test.mbt` 中"崩溃后从检查点恢复不丢不重"、"缺口两页回填闭合"、"裁剪后令牌仍有效"等 15 个场景
 
 ## M6 幂等发送（send）
 
