@@ -39,6 +39,7 @@ pub fn Event::is_redacted(Self) -> Bool
 pub fn Event::is_state(Self) -> Bool
 pub fn Event::kind(Self) -> EventKind
 pub fn Event::parse(String) -> Self raise @json.JsonDecodeError
+pub fn Event::redact(Self, Self) -> Self
 pub fn Event::redacts(Self) -> @ids.EventId?
 pub fn Event::sender_id(Self) -> @ids.UserId?
 pub fn Event::to_json(Self) -> Json
@@ -143,6 +144,8 @@ pub struct StrippedState {
   sender : String
   content : Map[String, Json]
 } derive(Eq, @debug.Debug)
+pub fn StrippedState::to_json(Self) -> Json
+pub impl ToJson for StrippedState
 pub impl @json.FromJson for StrippedState
 
 pub struct Unsigned {
