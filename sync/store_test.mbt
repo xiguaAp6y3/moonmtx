@@ -594,3 +594,76 @@ test "member names are disambiguated" {
   let room = store.room(rid(room_a)).unwrap()
   assert_eq(room.member_name("@alice:example.org"), "Al (@alice:example.org)")
 }
+
+///|
+test "gap: state events from the limited sync's state section do not close it" {
+  let store = @sync.Store::new()
+  ignore(store.apply(first_sync()))
+  // Carol joined during the gap: her member event is in the state section.
+  ignore(
+    store.apply(
+      sync(
+        "s2",
+        join=Map([
+          (
+            room_a,
+            room_body(
+              [msg("$20")],
+              state=[mem("$m_carol", "@carol:example.org")],
+              limited=true,
+              prev="g1",
+            ),
+          ),
+        ]),
+      ),
+    ),
+  )
+  let room = store.room(rid(room_a)).unwrap()
+  let got = store.fill_gap(
+    rid(room_a),
+    page("g1", end="g2", [
+      msg("$19"),
+      mem("$m_carol", "@carol:example.org"),
+      msg("$18"),
+    ]),
+  )
+  assert_eq(got.map(e => e.event_id.as_str()), ["$18", "$m_carol", "$19"])
+  assert_eq(room.gaps(), ["g2"])
+}
+
+///|
+test "paginate back recovers events dropped by trimming" {
+  let store = @sync.Store::new(timeline_cap=2)
+  ignore(
+    store.apply(
+      sync(
+        "s1",
+        join=Map([(room_a, room_body([msg("$1"), msg("$2")], prev="p0"))]),
+      ),
+    ),
+  )
+  ignore(
+    store.apply(
+      sync(
+        "s2",
+        join=Map([(room_a, room_body([msg("$3"), msg("$4")], prev="p1"))]),
+      ),
+    ),
+  )
+  let room = store.room(rid(room_a)).unwrap()
+  assert_eq(ids_of(room), ["$3", "$4"])
+  let got = store.paginate_back(
+    rid(room_a),
+    page("p1", end="p0", [msg("$2"), msg("$1")]),
+  )
+  assert_eq(got.map(e => e.event_id.as_str()), ["$1", "$2"])
+  assert_eq(ids_of(room), ["$1", "$2", "$3", "$4"])
+  // A redelivered sync still does not repeat them.
+  let s = store.apply(
+    sync(
+      "s3",
+      join=Map([(room_a, room_body([msg("$2"), msg("$5")], prev="p2"))]),
+    ),
+  )
+  assert_eq(s.rooms[0].events.map(e => e.event_id.as_str()), ["$5"])
+}

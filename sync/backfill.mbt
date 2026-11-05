@@ -72,24 +72,39 @@ fn Room::apply_page_state(self : Room, state : Array[@events.Event]) -> Unit {
 }
 
 ///|
-/// Events of a backwards page not seen before, oldest first. Stops at the
-/// first event already stored when `stop_at_known` is set.
+/// IDs of the events stored in `chunks[from:to]`.
+fn Room::stored_ids(self : Room, from : Int32, to : Int32) -> Map[String, Unit] {
+  let out : Map[String, Unit] = Map([])
+  for c in self.chunks[from:to] {
+    for e in c.events {
+      out[e.event_id.as_str()] = ()
+    }
+  }
+  out
+}
+
+///|
+/// Events of a backwards page, oldest first. Stops at the first event in
+/// `stop_at` and skips events in `skip`. Overlap is decided from the stored
+/// timeline, not from the de-duplication ring: the ring also holds state
+/// events and events that trimming dropped, which a page must not hide.
 fn Room::take_page(
   self : Room,
   page : Messages,
-  stop_at_known~ : Bool,
+  stop_at~ : Map[String, Unit],
+  skip~ : Map[String, Unit],
 ) -> (Array[@events.Event], Bool) {
   let out = []
   let mut hit_known = false
   for e in page.chunk {
-    if self.has_seen(e.event_id) {
-      if stop_at_known {
-        hit_known = true
-        break
-      }
-      continue
+    let id = e.event_id.as_str()
+    if stop_at.contains(id) {
+      hit_known = true
+      break
     }
-    out.push(e)
+    if !skip.contains(id) {
+      out.push(e)
+    }
   }
   let out = out.rev()
   for e in out {
@@ -124,7 +139,12 @@ pub fn Store::fill_gap(
     raise StaleToken(page.start)
   }
   room.apply_page_state(page.state)
-  let (events, hit_known) = room.take_page(page, stop_at_known=true)
+  let n = room.chunks.length()
+  let (events, hit_known) = room.take_page(
+    page,
+    stop_at=room.stored_ids(0, idx),
+    skip=room.stored_ids(idx, n),
+  )
   let after = room.chunks[idx]
   if hit_known || page.end is None {
     // Contiguous with the chunk before the gap: append there and join up.
@@ -156,7 +176,11 @@ pub fn Store::paginate_back(
     raise StaleToken(page.start)
   }
   room.apply_page_state(page.state)
-  let (events, _) = room.take_page(page, stop_at_known=false)
+  let (events, _) = room.take_page(
+    page,
+    stop_at=Map([]),
+    skip=room.stored_ids(0, room.chunks.length()),
+  )
   if events.is_empty() {
     front.prev_batch = page.end
   } else {
