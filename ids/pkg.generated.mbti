@@ -1,0 +1,80 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xiguaAp6y3/moonmtx/ids"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+}
+
+// Values
+pub const MAX_ID_BYTES : Int = 255
+
+// Errors
+pub(all) suberror IdError {
+  Empty
+  BadSigil(expected~ : Char, input~ : String)
+  TooLong(Int)
+  MissingServerName(String)
+  InvalidServerName(String)
+  InvalidLocalpart(String)
+} derive(Eq, @debug.Debug)
+pub fn IdError::to_string(Self) -> String
+pub impl Show for IdError
+
+// Types and methods
+pub struct EventId {
+  raw : String
+} derive(Compare, Eq, Hash, @debug.Debug)
+pub fn EventId::as_str(Self) -> String
+pub fn EventId::parse(String) -> Self raise IdError
+pub fn EventId::to_string(Self) -> String
+pub impl Show for EventId
+pub impl ToJson for EventId
+pub impl @json.FromJson for EventId
+
+pub struct RoomAlias {
+  localpart : String
+  server : ServerName
+} derive(Eq, Hash, @debug.Debug)
+pub fn RoomAlias::parse(String) -> Self raise IdError
+pub fn RoomAlias::to_string(Self) -> String
+pub impl Show for RoomAlias
+pub impl ToJson for RoomAlias
+pub impl @json.FromJson for RoomAlias
+
+pub struct RoomId {
+  raw : String
+} derive(Compare, Eq, Hash, @debug.Debug)
+pub fn RoomId::as_str(Self) -> String
+pub fn RoomId::parse(String) -> Self raise IdError
+pub fn RoomId::server_name(Self) -> ServerName?
+pub fn RoomId::to_string(Self) -> String
+pub impl Show for RoomId
+pub impl ToJson for RoomId
+pub impl @json.FromJson for RoomId
+
+pub struct ServerName {
+  host : String
+  port : Int?
+} derive(Eq, Hash, @debug.Debug)
+pub fn ServerName::parse(String) -> Self raise IdError
+pub fn ServerName::to_string(Self) -> String
+pub impl Show for ServerName
+pub impl ToJson for ServerName
+pub impl @json.FromJson for ServerName
+
+pub struct UserId {
+  localpart : String
+  server : ServerName
+} derive(Eq, Hash, @debug.Debug)
+pub fn UserId::is_compliant(Self) -> Bool
+pub fn UserId::new(String, ServerName) -> Self raise IdError
+pub fn UserId::parse(String) -> Self raise IdError
+pub fn UserId::to_string(Self) -> String
+pub impl Show for UserId
+pub impl ToJson for UserId
+pub impl @json.FromJson for UserId
+
+// Type aliases
+
+// Traits

@@ -30,11 +30,11 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 - [x] CI：三平台 `moon check/test --target all` + `moon fmt --check`
 - [x] README / ROADMAP
 
-## M1 标识符（ids）
+## M1 标识符（ids）✅
 
-- [ ] 服务器名（DNS 名 / IPv4 / IPv6 字面量 + 可选端口）
-- [ ] 用户 ID（含历史字符集兼容的宽松解析）、房间 ID、事件 ID、房间别名
-- [ ] 长度上限 255 字节与错误类型
+- [x] 服务器名（DNS 名 / IPv4 / IPv6 字面量 + 可选端口）
+- [x] 用户 ID（含历史字符集兼容的宽松解析）、房间 ID、事件 ID、房间别名
+- [x] 长度上限 255 字节与错误类型
 - 验收：规范附录"标识符语法"的正/负样本单测
 
 ## M2 请求模型与错误（api）
