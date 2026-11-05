@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  # Pinned to the toolchain the code is developed with: moonbitlang/async in
+  # moon.mod must match this core library version.
+  MOONBIT_INSTALL_VERSION: 0.10.15+943464bfa
+
 jobs:
   check:
     strategy:
@@ -14,7 +19,21 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: moonbitlang/setup-moonbit@v1
+
+      - name: Install MoonBit (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Install MoonBit (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+          "$env:USERPROFILE\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - run: moon version --all
       - run: moon update
       - run: moon check --target all --deny-warn
       - run: moon test --target all
