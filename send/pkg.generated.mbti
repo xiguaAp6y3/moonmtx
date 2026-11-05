@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xiguaAp6y3/moonmtx/send"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "xiguaAp6y3/moonmtx/api",
+  "xiguaAp6y3/moonmtx/events",
+  "xiguaAp6y3/moonmtx/ids",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Outbox {
+  // private fields
+}
+pub fn Outbox::cancel(Self, String) -> Bool
+pub fn Outbox::enqueue(Self, @ids.RoomId, String, Json) -> String
+pub fn Outbox::from_json(Json, max_attempts? : Int, base_delay_ms? : Int64, max_delay_ms? : Int64) -> Self raise @json.JsonDecodeError
+pub fn Outbox::get(Self, String) -> Pending?
+pub fn Outbox::new(String, max_attempts? : Int, base_delay_ms? : Int64, max_delay_ms? : Int64) -> Self
+pub fn Outbox::next_request(Self, Int64) -> (String, @api.Request)?
+pub fn Outbox::on_echo(Self, @ids.RoomId, Array[@events.Event]) -> Array[(String, @events.Event)]
+pub fn Outbox::on_response(Self, String, @api.Response, Int64) -> Outcome
+pub fn Outbox::on_transport_error(Self, String, String, Int64) -> Outcome
+pub fn Outbox::pending(Self) -> Array[Pending]
+pub fn Outbox::retry(Self, String) -> Bool
+pub fn Outbox::to_json(Self) -> Json
+pub impl ToJson for Outbox
+
+pub(all) enum Outcome {
+  Sent(@ids.EventId)
+  WillRetry(at_ms~ : Int64)
+  Failed(String)
+  Ignored
+} derive(Eq, @debug.Debug)
+
+pub struct Pending {
+  txn_id : String
+  room_id : @ids.RoomId
+  event_type : String
+  content : Json
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn Pending::attempts(Self) -> Int
+pub fn Pending::state(Self) -> SendState
+
+pub(all) enum SendState {
+  Queued
+  InFlight
+  Retrying(at_ms~ : Int64)
+  Sent(@ids.EventId)
+  Failed(String)
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits

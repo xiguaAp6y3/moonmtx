@@ -75,13 +75,15 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 - [x] 时间线中的重定向事件对已存副本执行删减
 - 验收：`sync/store_test.mbt` 中"崩溃后从检查点恢复不丢不重"、"缺口两页回填闭合"、"裁剪后令牌仍有效"等 15 个场景
 
-## M6 幂等发送（send）
+## M6 幂等发送（send）✅
 
-- [ ] 事务 ID 生成（会话内单调 + 随机前缀）
-- [ ] 待发队列：重试复用同一事务 ID；`M_LIMIT_EXCEEDED` 退避
-- [ ] 本地回显：用 `unsigned.transaction_id` 匹配 /sync 中回来的自己的事件
-- [ ] 房间操作请求：create / join / leave / invite、redact
-- 验收：重试不重复发送、回显匹配测试
+- [x] 事务 ID：设备级前缀 + 单调计数，计数随快照持久化，重启后不撞号
+- [x] 待发队列：同一房间按序、一次一条；不同房间互不阻塞；失败的不堵后续
+- [x] 重试复用同一事务 ID；`M_LIMIT_EXCEEDED` 按服务器给的延迟，5xx/传输错误指数退避，4xx 立即失败
+- [x] 本地回显：用 `unsigned.transaction_id` 匹配 /sync 回来的事件，回显先于或晚于响应都正确
+- [x] 发送中的消息不可取消；快照恢复时发送中的消息回到排队状态
+- [x] 房间操作请求（api）：create / join / leave / forget / invite、state、redact、typing、receipt
+- 验收：`send/outbox_test.mbt` 9 个场景
 
 ## M7 会话与传输（client / http）
 
