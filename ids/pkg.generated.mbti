@@ -27,6 +27,7 @@ pub struct EventId {
 } derive(Compare, Eq, Hash, @debug.Debug)
 pub fn EventId::as_str(Self) -> String
 pub fn EventId::parse(String) -> Self raise IdError
+pub fn EventId::to_json(Self) -> Json
 pub fn EventId::to_string(Self) -> String
 pub impl Show for EventId
 pub impl ToJson for EventId
@@ -37,6 +38,7 @@ pub struct RoomAlias {
   server : ServerName
 } derive(Eq, Hash, @debug.Debug)
 pub fn RoomAlias::parse(String) -> Self raise IdError
+pub fn RoomAlias::to_json(Self) -> Json
 pub fn RoomAlias::to_string(Self) -> String
 pub impl Show for RoomAlias
 pub impl ToJson for RoomAlias
@@ -48,6 +50,7 @@ pub struct RoomId {
 pub fn RoomId::as_str(Self) -> String
 pub fn RoomId::parse(String) -> Self raise IdError
 pub fn RoomId::server_name(Self) -> ServerName?
+pub fn RoomId::to_json(Self) -> Json
 pub fn RoomId::to_string(Self) -> String
 pub impl Show for RoomId
 pub impl ToJson for RoomId
@@ -58,6 +61,7 @@ pub struct ServerName {
   port : Int?
 } derive(Eq, Hash, @debug.Debug)
 pub fn ServerName::parse(String) -> Self raise IdError
+pub fn ServerName::to_json(Self) -> Json
 pub fn ServerName::to_string(Self) -> String
 pub impl Show for ServerName
 pub impl ToJson for ServerName
@@ -70,6 +74,7 @@ pub struct UserId {
 pub fn UserId::is_compliant(Self) -> Bool
 pub fn UserId::new(String, ServerName) -> Self raise IdError
 pub fn UserId::parse(String) -> Self raise IdError
+pub fn UserId::to_json(Self) -> Json
 pub fn UserId::to_string(Self) -> String
 pub impl Show for UserId
 pub impl ToJson for UserId

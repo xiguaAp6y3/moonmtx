@@ -426,3 +426,18 @@ pub extend EventId with Show::{to_string}
 
 ///|
 pub extend IdError with Show::{to_string}
+
+///|
+pub extend ServerName with ToJson::{to_json}
+
+///|
+pub extend UserId with ToJson::{to_json}
+
+///|
+pub extend RoomAlias with ToJson::{to_json}
+
+///|
+pub extend RoomId with ToJson::{to_json}
+
+///|
+pub extend EventId with ToJson::{to_json}

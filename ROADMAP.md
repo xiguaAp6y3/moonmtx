@@ -45,13 +45,14 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 - [x] 认证：`/login`（密码 / 令牌）、`/logout`、`/account/whoami`、`/refresh`
 - 验收：请求构造与响应解析的夹具测试
 
-## M3 事件模型（events）
+## M3 事件模型（events）✅
 
-- [ ] 事件外壳：type / event_id / sender / origin_server_ts / state_key / unsigned，保留原始 JSON
-- [ ] 类型化内容：`m.room.message`（text/notice/emote）、`m.room.member`、`m.room.create`、
+- [x] 事件外壳：type / event_id / sender / origin_server_ts / state_key / unsigned，保留原始 JSON
+- [x] 类型化内容：`m.room.message`（text/notice/emote）、`m.room.member`、`m.room.create`、
       `m.room.name`、`m.room.topic`、`m.room.power_levels`、`m.reaction`、`m.room.redaction`
-- [ ] 关系：`m.relates_to`（回复 / 编辑 `m.replace` / 注解）
-- [ ] 未知事件类型原样保留，不丢字段
+      （`m.room.create` 推迟到 M5 按需加入）
+- [x] 关系：`m.relates_to`（回复 / 编辑 `m.replace` / 注解 / 线程）
+- [x] 未知事件类型原样保留，不丢字段
 - 验收：每类事件的解析与回写测试
 
 ## M4 /sync 解析（sync）
