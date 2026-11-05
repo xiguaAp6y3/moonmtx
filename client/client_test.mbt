@@ -44,7 +44,7 @@ fn message(id : String, txn? : String) -> Json {
 test "prepare adds the base url and token" {
   let c = @client.Client::new("https://hs.example.org/", session())
   let p = c.prepare(@api.whoami_request())
-  assert_eq(p.verb, "GET")
+  assert_eq(p.verb, Get)
   assert_eq(p.url, "https://hs.example.org/_matrix/client/v3/account/whoami")
   assert_eq(p.headers, [("Authorization", "Bearer tok")])
   assert_eq(p.body, None)
@@ -75,7 +75,7 @@ test "send, then the echo arrives through sync" {
   let txn = c.send_text(r, "hello")
   guard c.next_send(0) is Some((t, p)) else { fail("expected a send") }
   assert_eq(t, txn)
-  assert_eq(p.verb, "PUT")
+  assert_eq(p.verb, Put)
   assert_true(p.url.has_suffix("/send/m.room.message/" + txn), msg=p.url)
   assert_eq(p.body, Some("{\"msgtype\":\"m.text\",\"body\":\"hello\"}"))
   assert_eq(

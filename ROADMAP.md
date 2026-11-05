@@ -21,7 +21,7 @@ events     事件模型：保留原始 JSON + 常用类型化内容（消息、�
 sync       /sync 响应解析、过滤器构造、房间状态存储与检查点
 send       事务 ID 与幂等发送队列（本地回显匹配、限流重试）
 client     把以上组合为会话对象：吃响应、吐请求，不持有连接
-http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
+transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_bot 示例
 ```
 
 ## M0 工程骨架 ✅
@@ -85,12 +85,12 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 - [x] 房间操作请求（api）：create / join / leave / forget / invite、state、redact、typing、receipt
 - 验收：`send/outbox_test.mbt` 9 个场景
 
-## M7 会话与传输（client / http）
+## M7 会话与传输（client / transport）✅
 
 - [x] `client`：组合会话、同步存储、发送队列；`prepare` 产出带绝对 URL/令牌头/正文的请求；快照与恢复
-- [ ] `http`（native）：基于 `moonbitlang/async` 的 HTTP 传输
-- [ ] 示例：echo bot（`moon run`）
-- 验收：示例可运行；接口有文档
+- [x] `transport`（仅 native）：基于 `moonbitlang/async` 的 HTTP 传输与同步循环（限流/5xx/断网退避重试）
+- [x] 示例：`cmd/echo_bot`，状态文件 0600 权限、临时文件 + rename 原子写入，重启续传
+- 验收：`transport_test.mbt` 用本机假 homeserver 走真实 HTTP，覆盖 429 重试、发送、回显、续传
 
 ## M8 互通验证与发布
 

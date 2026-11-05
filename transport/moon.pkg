@@ -1,0 +1,18 @@
+import {
+  "moonbitlang/async",
+  "moonbitlang/async/http",
+  "xiguaAp6y3/moonmtx/api",
+  "xiguaAp6y3/moonmtx/sync",
+  "xiguaAp6y3/moonmtx/client",
+}
+
+import {
+  "moonbitlang/async",
+  "moonbitlang/async/http",
+  "moonbitlang/async/socket",
+  "xiguaAp6y3/moonmtx/ids",
+  "xiguaAp6y3/moonmtx/api",
+  "xiguaAp6y3/moonmtx/client",
+} for "test"
+
+supported_targets = "+native"

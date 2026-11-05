@@ -11,7 +11,7 @@
 /// A request ready for an HTTP client: absolute URL, headers with the
 /// access token, and body text. Not `Debug`: the headers hold the token.
 pub struct Prepared {
-  verb : String
+  verb : @api.Method
   url : String
   headers : Array[(String, String)]
   body : String?
@@ -66,7 +66,7 @@ pub fn Client::set_session(self : Client, session : @api.Session) -> Unit {
 /// Materialises a request against this client's homeserver and token.
 pub fn Client::prepare(self : Client, req : @api.Request) -> Prepared {
   {
-    verb: req.verb.as_str(),
+    verb: req.verb,
     url: req.url(self.homeserver),
     headers: req.headers(access_token=self.session.access_token),
     body: req.body_text(),
