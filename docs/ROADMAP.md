@@ -28,7 +28,7 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
 
 - [x] 模块元数据、Apache-2.0、pre-commit（moon check）
 - [x] CI：三平台 `moon check/test --target all` + `moon fmt --check`
-- [x] README / ROADMAP
+- [x] README / docs/ROADMAP
 
 ## M1 标识符（ids）✅
 
