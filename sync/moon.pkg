@@ -1,0 +1,12 @@
+import {
+  "moonbitlang/core/json",
+  "xiguaAp6y3/moonmtx/ids",
+  "xiguaAp6y3/moonmtx/api",
+  "xiguaAp6y3/moonmtx/events",
+  "xiguaAp6y3/moonmtx/internal/jsonx",
+}
+
+import {
+  "xiguaAp6y3/moonmtx/ids",
+  "xiguaAp6y3/moonmtx/api",
+} for "test"

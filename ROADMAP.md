@@ -55,11 +55,12 @@ http       （仅 native）基于 moonbitlang/async 的传输实现 + 示例
 - [x] 未知事件类型原样保留，不丢字段
 - 验收：每类事件的解析与回写测试
 
-## M4 /sync 解析（sync）
+## M4 /sync 解析（sync）✅
 
-- [ ] 过滤器构造（timeline limit、lazy-load members）
-- [ ] 响应解析：`rooms.join/invite/leave`、timeline（`limited`、`prev_batch`）、state、
-      ephemeral、account_data、`next_batch`
+- [x] 过滤器构造（timeline limit、lazy-load members、类型/房间过滤，内联或上传）
+- [x] 响应解析：`rooms.join/invite/knock/leave`、timeline（`limited`、`prev_batch`）、state、
+      ephemeral、account_data、unread_notifications、`next_batch`
+- [x] 单个坏事件/坏房间 ID 跳过并记入 `invalid`，不拖垮整批
 - 验收：初次同步 / 增量同步 / limited 时间线的夹具测试
 
 ## M5 房间状态与可恢复同步（sync）

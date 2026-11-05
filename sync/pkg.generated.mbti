@@ -1,0 +1,93 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "xiguaAp6y3/moonmtx/sync"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "xiguaAp6y3/moonmtx/api",
+  "xiguaAp6y3/moonmtx/events",
+  "xiguaAp6y3/moonmtx/ids",
+}
+
+// Values
+pub fn parse_filter_id(@api.Response) -> String raise @api.ApiError
+
+pub fn parse_sync(@api.Response) -> SyncResponse raise @api.ApiError
+
+pub fn sync_request(since? : String, filter? : FilterRef, timeout_ms? : Int, full_state? : Bool, set_presence? : String) -> @api.Request
+
+pub fn upload_filter_request(@ids.UserId, Filter) -> @api.Request
+
+// Errors
+
+// Types and methods
+pub struct Filter {
+  timeline_limit : Int?
+  lazy_load_members : Bool
+  timeline_types : Array[String]?
+  timeline_not_types : Array[String]
+  rooms : Array[@ids.RoomId]?
+} derive(Eq, @debug.Debug)
+pub fn Filter::new(timeline_limit? : Int, lazy_load_members? : Bool, timeline_types? : Array[String], timeline_not_types? : Array[String], rooms? : Array[@ids.RoomId]) -> Self
+pub fn Filter::to_json(Self) -> Json
+pub impl ToJson for Filter
+
+pub(all) enum FilterRef {
+  Inline(Filter)
+  Id(String)
+}
+
+pub struct InvitedRoom {
+  room_id : @ids.RoomId
+  invite_state : Array[@events.StrippedState]
+} derive(Eq, @debug.Debug)
+
+pub struct JoinedRoom {
+  room_id : @ids.RoomId
+  summary : RoomSummary
+  state : Array[@events.Event]
+  timeline : Timeline
+  ephemeral : Array[Json]
+  account_data : Array[Json]
+  notification_count : Int64?
+  highlight_count : Int64?
+} derive(Eq, @debug.Debug)
+
+pub struct KnockedRoom {
+  room_id : @ids.RoomId
+  knock_state : Array[@events.StrippedState]
+} derive(Eq, @debug.Debug)
+
+pub struct LeftRoom {
+  room_id : @ids.RoomId
+  state : Array[@events.Event]
+  timeline : Timeline
+  account_data : Array[Json]
+} derive(Eq, @debug.Debug)
+
+pub struct RoomSummary {
+  heroes : Array[String]?
+  joined_member_count : Int64?
+  invited_member_count : Int64?
+} derive(Eq, @debug.Debug)
+
+pub struct SyncResponse {
+  next_batch : String
+  join : Array[JoinedRoom]
+  invite : Array[InvitedRoom]
+  knock : Array[KnockedRoom]
+  leave : Array[LeftRoom]
+  account_data : Array[Json]
+  invalid : Array[String]
+} derive(Eq, @debug.Debug)
+pub fn SyncResponse::decode(Map[String, Json]) -> Self raise @json.JsonDecodeError
+
+pub struct Timeline {
+  events : Array[@events.Event]
+  limited : Bool
+  prev_batch : String?
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
