@@ -4,6 +4,6 @@ target/
 target
 .mooncakes/
 .moonagent/
-
+AGENTS.md
 # 选题调研资料（本地留存，不入库）
 survey-*/
