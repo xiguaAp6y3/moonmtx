@@ -1,5 +1,7 @@
 # moonmtx
 
+English | [简体中文](README.zh-CN.md)
+
 Matrix Client-Server API SDK core for MoonBit.
 
 moonmtx builds requests, consumes responses, and keeps the client state a
