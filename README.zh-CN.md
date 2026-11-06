@@ -103,6 +103,17 @@ moon fmt
 CI 把工具链固定为 `0.10.15+943464bfa`，因为 `moonbitlang/async@0.22.4`
 必须与核心库版本一致。
 
+## 互通验证
+
+`interop/run.sh` 在 Docker 中启动一次性 Synapse，注册两个用户，然后运行
+`interop/main.mbt`，其中所有请求都由 moonmtx 发起。10 个场景覆盖登录、建房 /
+邀请 / 加入、按序发送与本地回显、事务 ID 重试、崩溃后从快照恢复、缺口回填、
+编辑 / 反应 / 删减、向前翻页和退出房间。需要 Docker 与 native 工具链。
+
+```bash
+bash interop/run.sh
+```
+
 ## 来源与许可证
 
 Apache-2.0，见 [LICENSE](LICENSE)。规范来源、测试夹具出处与相关项目见

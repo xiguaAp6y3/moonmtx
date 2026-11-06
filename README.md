@@ -107,6 +107,19 @@ Enable the pre-commit hook with `git config core.hooksPath .githooks`.
 The toolchain is pinned to `0.10.15+943464bfa` in CI because
 `moonbitlang/async@0.22.4` must match the core library.
 
+## Interop check
+
+`interop/run.sh` starts a throwaway Synapse in Docker, registers two users,
+and runs `interop/main.mbt`, in which every request is made by moonmtx. The
+10 scenarios cover login, room create/invite/join, ordered sending with local
+echo, transaction-ID retries, resuming from a snapshot after a crash, gap
+filling, edits/reactions/redactions, back-pagination and leaving. It needs
+Docker and a native toolchain.
+
+```bash
+bash interop/run.sh
+```
+
 ## Sources and license
 
 Apache-2.0. See [LICENSE](LICENSE). Specification sources, test fixture

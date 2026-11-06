@@ -1,0 +1,15 @@
+import {
+  "moonbitlang/core/env",
+  "moonbitlang/core/json",
+  "moonbitlang/async",
+  "xiguaAp6y3/moonmtx/ids",
+  "xiguaAp6y3/moonmtx/api",
+  "xiguaAp6y3/moonmtx/events",
+  "xiguaAp6y3/moonmtx/sync",
+  "xiguaAp6y3/moonmtx/client",
+  "xiguaAp6y3/moonmtx/transport",
+}
+
+supported_targets = "+native"
+
+pkgtype(kind: "executable")

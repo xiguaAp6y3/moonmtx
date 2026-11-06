@@ -94,8 +94,11 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
 
 ## M8 互通验证与发布
 
-- [ ] Docker Synapse 本地互通脚本：注册 → 登录 → 建房 → 发消息 → 另一会话 `/sync` 收到
-      → 断点恢复后继续同步（由 MoonBit SDK 发起请求，不是跑 SyTest 原套件）
+- [x] Synapse 互通：`interop/run.sh` 起一次性 Synapse（Docker，v1.164.2），`interop/main.mbt`
+      由 SDK 发起全部请求，10 个场景：发现、两用户登录与 whoami、建房邀请加入、按序发送与回显、
+      同一事务 ID 只发一次、快照恢复后恰好一次、limited 缺口回填、编辑/反应/删减、
+      向前翻页到 `m.room.create`、退出房间；本地连续 4 次全部通过；CI 增加 interop 任务
+      （不是跑 SyTest 原套件；Synapse 1.164.2 公布的最高规范版本为 v1.17，所用端点均在其中）
 - [x] README 用法与包说明；`docs/upstream.md` 记录规范版本、许可证、夹具来源与相关项目
 - [ ] mooncakes.io 发布 0.1.0
 - [ ] 申报材料（人工撰写）与提交前自查

@@ -38,3 +38,15 @@ jobs:
       - run: moon check --target all --deny-warn
       - run: moon test --target all
       - run: moon fmt --check
+
+  interop:
+    # Drives a real Synapse (Docker) through the SDK: interop/main.mbt.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - run: moon update
+      - run: bash interop/run.sh
