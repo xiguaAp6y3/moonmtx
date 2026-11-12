@@ -8,7 +8,7 @@
 - GitHub 仓库：https://github.com/xiguaAp6y3/moonmtx
 - 项目方向：即时通讯协议 SDK / 应用基础设施
 - 项目类型：原创实现，依据 Matrix 规范 v1.19
-- 仓库现状：公开，main 分支 19 个有效提交，三平台 CI 通过
+- 仓库现状：公开
 
 **项目简介**
 
