@@ -10,6 +10,7 @@
 
 ///|
 /// What one `Store::apply` changed in a room.
+#derive(Eq, Debug)
 pub struct RoomUpdate {
   room_id : @ids.RoomId
   membership : @events.Membership
@@ -18,9 +19,10 @@ pub struct RoomUpdate {
   /// Set when the timeline was `limited`: events are missing before
   /// `events`. Pass to `messages_request` and then `Store::fill_gap`.
   gap : String?
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct SyncSummary {
   next_batch : String
   rooms : Array[RoomUpdate]
@@ -28,15 +30,16 @@ pub struct SyncSummary {
   invited : Array[@ids.RoomId]
   /// Entries skipped while parsing the response.
   invalid : Array[String]
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) suberror StoreError {
   UnknownRoom(@ids.RoomId)
   /// The page does not continue any gap or the start of the timeline.
   StaleToken(String)
   BadSnapshot(String)
-} derive(Eq, Debug)
+}
 
 ///|
 pub impl Show for StoreError with fn output(self, logger) {

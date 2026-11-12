@@ -10,6 +10,7 @@
 // The queue does no I/O and reads no clock: callers pass `now_ms`.
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum SendState {
   /// Waiting to be sent.
   Queued
@@ -21,9 +22,10 @@ pub(all) enum SendState {
   Sent(@ids.EventId)
   /// Gave up. `retry` queues it again with the same transaction ID.
   Failed(String)
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct Pending {
   txn_id : String
   room_id : @ids.RoomId
@@ -31,7 +33,7 @@ pub struct Pending {
   content : Json
   priv mut state : SendState
   priv mut attempts : Int32
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Pending::state(self : Pending) -> SendState {
@@ -45,13 +47,14 @@ pub fn Pending::attempts(self : Pending) -> Int32 {
 
 ///|
 /// What a send response did to a queued message.
+#derive(Eq, Debug)
 pub(all) enum Outcome {
   Sent(@ids.EventId)
   WillRetry(at_ms~ : Int64)
   Failed(String)
   /// The message was already echoed or cancelled; nothing to do.
   Ignored
-} derive(Eq, Debug)
+}
 
 ///|
 pub struct Outbox {

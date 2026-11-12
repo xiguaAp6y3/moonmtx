@@ -8,6 +8,7 @@
 pub const MAX_ID_BYTES : Int32 = 255
 
 ///|
+#derive(Eq, Debug)
 pub(all) suberror IdError {
   Empty
   BadSigil(expected~ : Char, input~ : String)
@@ -15,7 +16,7 @@ pub(all) suberror IdError {
   MissingServerName(String)
   InvalidServerName(String)
   InvalidLocalpart(String)
-} derive(Eq, Debug)
+}
 
 ///|
 pub impl Show for IdError with fn output(self, logger) {
@@ -77,11 +78,12 @@ fn is_ipv6_char(c : Char) -> Bool {
 ///|
 /// A server name: `hostname [ ":" port ]`, where the hostname is a DNS name,
 /// an IPv4 literal, or a bracketed IPv6 literal.
+#derive(Eq, Hash, Debug)
 pub struct ServerName {
   /// The host as written, including brackets for IPv6 literals.
   host : String
   port : Int32?
-} derive(Eq, Hash, Debug)
+}
 
 ///|
 pub impl Show for ServerName with fn output(self, logger) {
@@ -115,7 +117,7 @@ pub fn ServerName::parse(s : String) -> ServerName raise IdError {
   }
   if s.has_prefix("[") {
     guard s.find("]") is Some(close) else { raise InvalidServerName(s) }
-    let inner = s.view(start_offset=1, end_offset=close)
+    let inner = s.clamped_view(start=1, end=close)
     if inner.length() < 2 || inner.length() > 45 {
       raise InvalidServerName(s)
     }
@@ -124,8 +126,8 @@ pub fn ServerName::parse(s : String) -> ServerName raise IdError {
         raise InvalidServerName(s)
       }
     }
-    let host = s.view(end_offset=close + 1).to_owned()
-    let rest = s.view(start_offset=close + 1)
+    let host = s.clamped_view(end=close + 1).to_owned()
+    let rest = s.clamped_view(start=close + 1)
     if rest.is_empty() {
       return { host, port: None, }
     }
@@ -136,7 +138,7 @@ pub fn ServerName::parse(s : String) -> ServerName raise IdError {
   }
   let (host, port) = match s.split_once(":") {
     Some((h, p)) => (h, Some(parse_port(p, s)))
-    None => (s.view(), None)
+    None => (s.clamped_view(), None)
   }
   if host.is_empty() || host.length() > 255 {
     raise InvalidServerName(s)
@@ -164,17 +166,18 @@ fn split_qualified(
   }
   check_len(s)
   guard s.find(":") is Some(colon) else { raise MissingServerName(s) }
-  let localpart = s.view(start_offset=1, end_offset=colon).to_owned()
-  let server = ServerName::parse(s.view(start_offset=colon + 1).to_owned())
+  let localpart = s.clamped_view(start=1, end=colon).to_owned()
+  let server = ServerName::parse(s.clamped_view(start=colon + 1).to_owned())
   (localpart, server)
 }
 
 ///|
 /// A user ID: `@localpart:server`.
+#derive(Eq, Hash, Debug)
 pub struct UserId {
   localpart : String
   server : ServerName
-} derive(Eq, Hash, Debug)
+}
 
 ///|
 pub impl Show for UserId with fn output(self, logger) {
@@ -242,10 +245,11 @@ pub fn UserId::is_compliant(self : UserId) -> Bool {
 
 ///|
 /// A room alias: `#alias:server`.
+#derive(Eq, Hash, Debug)
 pub struct RoomAlias {
   localpart : String
   server : ServerName
-} derive(Eq, Hash, Debug)
+}
 
 ///|
 pub impl Show for RoomAlias with fn output(self, logger) {
@@ -267,9 +271,10 @@ pub fn RoomAlias::parse(s : String) -> RoomAlias raise IdError {
 ///|
 /// A room ID: `!opaque`. Room versions before 12 append `:server`; newer ones
 /// do not, so the ID is kept opaque.
+#derive(Eq, Hash, Compare, Debug)
 pub struct RoomId {
   raw : String
-} derive(Eq, Hash, Compare, Debug)
+}
 
 ///|
 pub impl Show for RoomId with fn output(self, logger) {
@@ -307,7 +312,7 @@ pub fn RoomId::as_str(self : RoomId) -> String {
 pub fn RoomId::server_name(self : RoomId) -> ServerName? {
   guard self.raw.find(":") is Some(colon) else { return None }
   try
-    ServerName::parse(self.raw.view(start_offset=colon + 1).to_owned())
+    ServerName::parse(self.raw.clamped_view(start=colon + 1).to_owned())
   catch {
     _ => None
   } noraise {
@@ -317,9 +322,10 @@ pub fn RoomId::server_name(self : RoomId) -> ServerName? {
 
 ///|
 /// An event ID: `$opaque`.
+#derive(Eq, Hash, Compare, Debug)
 pub struct EventId {
   raw : String
-} derive(Eq, Hash, Compare, Debug)
+}
 
 ///|
 pub impl Show for EventId with fn output(self, logger) {

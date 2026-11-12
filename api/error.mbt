@@ -29,6 +29,7 @@ pub const M_UNKNOWN : String = "M_UNKNOWN"
 
 ///|
 /// A Matrix error body `{"errcode": ..., "error": ...}` with the HTTP status.
+#derive(Eq, Debug)
 pub struct MatrixError {
   status : Int32
   errcode : String
@@ -39,9 +40,10 @@ pub struct MatrixError {
   soft_logout : Bool
   /// The whole error object, for fields this type does not model.
   raw : Map[String, Json]
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub(all) suberror ApiError {
   /// The server answered with a standard Matrix error body.
   Matrix(MatrixError)
@@ -49,7 +51,7 @@ pub(all) suberror ApiError {
   Http(status~ : Int32, body~ : String)
   /// A 2xx response whose body could not be decoded.
   Decode(String)
-} derive(Eq, Debug)
+}
 
 ///|
 pub impl Show for ApiError with fn output(self, logger) {

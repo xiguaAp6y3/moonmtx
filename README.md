@@ -47,10 +47,10 @@ Not in 0.1: end-to-end encryption, media, federation, application services.
 With the native transport:
 
 ```moonbit
-async fn run(homeserver : String, user : String, password : String) -> Unit {
+async fn run(homeserver : String, user : String, password : String, txn_prefix : String) -> Unit {
   let login = @api.login_request(Password(User(user), password~))
   let session = @api.parse_login(@transport.request(homeserver, login))
-  let c = @client.Client::new(homeserver, session)
+  let c = @client.Client::new(homeserver, session, txn_prefix~)
   @transport.run_sync_loop(c, summary => {
     for r in summary.rooms {
       for e in r.events {
@@ -70,15 +70,27 @@ With your own HTTP client, drive the session yourself:
 let req = c.prepare(c.sync_request())       // verb, url, headers, body
 let resp = @api.Response::new(status, body) // from your HTTP client
 let summary = c.on_sync_response(resp)
+// Handle summary and enqueue replies, then atomically save c.snapshot().
 while c.next_send(now_ms) is Some((txn_id, req)) {
+  // Atomically save c.snapshot() BEFORE sending req (also saves its txn ID).
   // send req, then:
   ignore(c.on_send_response(txn_id, @api.Response::new(status, body), now_ms))
 }
 ```
 
-Persist `c.snapshot()` with one atomic write after each sync and restore with
-`Client::restore`. The snapshot does not contain the access token; store the
-`Session` separately as a secret.
+Give each fresh `Client::new` a unique `txn_prefix` (e.g. 128 bits from OS
+randomness). Resume with `Client::restore` and the latest committed snapshot.
+Never restore an older backup and continue sending on that device: its counter
+can be behind messages the server has already accepted.
+
+With `persist`, `run_sync_loop` runs the callback, commits the state and queued
+replies together, then saves again before each send. `persist` must atomically
+replace the previous snapshot and return only after the write succeeds. If a
+callback or save fails, discard the client and restore the committed snapshot;
+the batch will be replayed. Use a single owner for this loop. Callbacks should
+enqueue replies; external side effects need their own idempotency. Omitting
+`persist` provides no crash recovery. Standalone `flush_sends` also accepts it.
+Snapshots exclude the access token; store `Session` separately as a secret.
 
 ### Example bot
 
@@ -87,7 +99,8 @@ MATRIX_HOMESERVER=https://matrix.example.org MATRIX_USER=@bot:example.org MATRIX
 ```
 
 It answers `!echo <text>` with a notice. With `MATRIX_STATE` it resumes
-without logging in again and does not answer old messages.
+without logging in again; uncommitted batches are replayed, committed batches
+are not handled again. Use a private state directory and one bot per state file.
 
 ## Development
 
@@ -104,8 +117,8 @@ moon fmt
 ```
 
 Enable the pre-commit hook with `git config core.hooksPath .githooks`.
-The toolchain is pinned to `0.10.15+943464bfa` in CI because
-`moonbitlang/async@0.22.4` must match the core library.
+The toolchain is pinned to the locally validated `0.10.20+65efd5b93` in CI,
+with `moonbitlang/async@0.22.4`. Revalidate both when upgrading.
 
 ## Interop check
 

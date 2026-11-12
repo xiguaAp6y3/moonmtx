@@ -3,7 +3,8 @@
 //
 // Typical loop:
 //   1. `prepare(sync_request(...))`, send it, give the response to
-//      `on_sync_response`; persist `snapshot()` after each one.
+//      `on_sync_response`; handle it and enqueue replies, then atomically
+//      persist `snapshot()` before sending anything or polling again.
 //   2. Between syncs, send everything `next_send` returns and give each
 //      response to `on_send_response`.
 
@@ -28,10 +29,13 @@ pub struct Client {
 
 ///|
 /// Creates a client for a logged-in session. `homeserver` is the base URL,
-/// e.g. from discovery. Pass a restored store and outbox to resume.
+/// e.g. from discovery. `txn_prefix` must be unique for each fresh client
+/// on the same device (e.g. an OS-generated random 128-bit value).
+/// Use `restore` with the latest committed snapshot to resume instead.
 pub fn Client::new(
   homeserver : String,
   session : @api.Session,
+  txn_prefix~ : String,
   store~ : @sync.Store = @sync.Store::new(),
   outbox? : @send.Outbox,
   filter~ : @sync.Filter = @sync.Filter::new(
@@ -41,7 +45,7 @@ pub fn Client::new(
 ) -> Client {
   let outbox = match outbox {
     Some(o) => o
-    None => @send.Outbox::new(session.device_id)
+    None => @send.Outbox::new(session.device_id + "." + txn_prefix)
   }
   { homeserver, session, store, outbox, filter, }
 }
@@ -103,7 +107,8 @@ pub fn Client::on_sync_response(
 }
 
 ///|
-/// Queues an event for sending and returns its transaction ID.
+/// Queues an event for sending and returns its transaction ID. Commit a
+/// snapshot before sending: restoring an older snapshot can reuse IDs.
 pub fn Client::send(
   self : Client,
   room_id : @ids.RoomId,
@@ -155,9 +160,10 @@ pub fn Client::snapshot(self : Client) -> Json {
 }
 
 ///|
+#derive(Debug)
 pub(all) suberror RestoreError {
   RestoreError(String)
-} derive(Debug)
+}
 
 ///|
 /// Restores a client from `snapshot()` output and a stored session.
@@ -179,7 +185,8 @@ pub fn Client::restore(
     e => raise RestoreError(e.to_string())
   }
   match filter {
-    Some(f) => Client::new(homeserver, session, store~, outbox~, filter=f)
-    None => Client::new(homeserver, session, store~, outbox~)
+    Some(f) =>
+      Client::new(homeserver, session, txn_prefix="", store~, outbox~, filter=f)
+    None => Client::new(homeserver, session, txn_prefix="", store~, outbox~)
   }
 }

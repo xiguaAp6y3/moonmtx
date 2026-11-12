@@ -8,19 +8,20 @@ import {
 }
 
 // Values
-pub fn edit(@ids.EventId, MessageContent) -> Json
+pub fn edit(@ids.EventId, MessageContent) -> @json.Json
 
 pub fn emote(String, html? : String) -> MessageContent
 
 pub fn notice(String, html? : String) -> MessageContent
 
-pub fn reaction(@ids.EventId, String) -> Json
+pub fn reaction(@ids.EventId, String) -> @json.Json
 
 pub fn text(String, html? : String) -> MessageContent
 
 // Errors
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub struct Event {
   kind_str : String
   event_id : @ids.EventId
@@ -28,11 +29,11 @@ pub struct Event {
   origin_server_ts : Int64
   room_id : @ids.RoomId?
   state_key : String?
-  content : Map[String, Json]
+  content : Map[String, @json.Json]
   unsigned : Unsigned?
-  raw : Map[String, Json]
-} derive(Eq, @debug.Debug)
-pub fn Event::decode(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+  raw : Map[String, @json.Json]
+}
+pub fn Event::decode(@json.Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn Event::event_type(Self) -> String
 pub fn Event::in_room(Self, @ids.RoomId) -> Self
 pub fn Event::is_redacted(Self) -> Bool
@@ -42,11 +43,12 @@ pub fn Event::parse(String) -> Self raise @json.JsonDecodeError
 pub fn Event::redact(Self, Self) -> Self
 pub fn Event::redacts(Self) -> @ids.EventId?
 pub fn Event::sender_id(Self) -> @ids.UserId?
-pub fn Event::to_json(Self) -> Json
+pub fn Event::to_json(Self) -> @json.Json
 pub fn Event::transaction_id(Self) -> String?
-pub impl ToJson for Event
 pub impl @json.FromJson for Event
+pub impl @json.ToJson for Event
 
+#derive(Eq, @debug.Debug)
 pub(all) enum EventKind {
   Message(MessageContent)
   Member(MemberContent)
@@ -56,17 +58,19 @@ pub(all) enum EventKind {
   Reaction(Relation)
   Redaction
   Unknown
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub struct MemberContent {
   membership : Membership
   displayname : String?
   avatar_url : String?
   reason : String?
   is_direct : Bool
-} derive(Eq, @debug.Debug)
-pub fn MemberContent::decode(Map[String, Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
+}
+pub fn MemberContent::decode(Map[String, @json.Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Membership {
   Join
   Invite
@@ -74,27 +78,29 @@ pub(all) enum Membership {
   Ban
   Knock
   Other(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn Membership::as_str(Self) -> String
 pub fn Membership::parse(String) -> Self
 
+#derive(Eq, @debug.Debug)
 pub struct MessageContent {
   msgtype : MsgType
   body : String
   format : String?
   formatted_body : String?
   relation : Relation?
-  new_content : Map[String, Json]?
-  raw : Map[String, Json]
-} derive(Eq, @debug.Debug)
-pub fn MessageContent::decode(Map[String, Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
+  new_content : Map[String, @json.Json]?
+  raw : Map[String, @json.Json]
+}
+pub fn MessageContent::decode(Map[String, @json.Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn MessageContent::in_thread(Self, @ids.EventId, reply_to? : @ids.EventId) -> Self
 pub fn MessageContent::new(MsgType, String, html? : String, relation? : Relation) -> Self
 pub fn MessageContent::replacement(Self) -> Self?
 pub fn MessageContent::reply_to(Self, @ids.EventId) -> Self
-pub fn MessageContent::to_json(Self) -> Json
-pub impl ToJson for MessageContent
+pub fn MessageContent::to_json(Self) -> @json.Json
+pub impl @json.ToJson for MessageContent
 
+#derive(Eq, @debug.Debug)
 pub(all) enum MsgType {
   Text
   Notice
@@ -105,10 +111,11 @@ pub(all) enum MsgType {
   Video
   Location
   Other(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn MsgType::as_str(Self) -> String
 pub fn MsgType::parse(String) -> Self
 
+#derive(Eq, @debug.Debug)
 pub struct PowerLevels {
   ban : Int64
   kick : Int64
@@ -120,41 +127,44 @@ pub struct PowerLevels {
   events : Map[String, Int64]
   users : Map[String, Int64]
   notifications : Map[String, Int64]
-} derive(Eq, @debug.Debug)
+}
 pub fn PowerLevels::absent(String?) -> Self
 pub fn PowerLevels::can_send(Self, String, String, is_state~ : Bool) -> Bool
-pub fn PowerLevels::decode(Map[String, Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn PowerLevels::decode(Map[String, @json.Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn PowerLevels::required_for(Self, String, is_state~ : Bool) -> Int64
 pub fn PowerLevels::user_level(Self, String) -> Int64
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Relation {
   Reply(@ids.EventId)
   Replace(@ids.EventId)
   Annotation(@ids.EventId, key~ : String)
   Thread(root~ : @ids.EventId, reply_to~ : @ids.EventId?)
-  Unknown(Map[String, Json])
-} derive(Eq, @debug.Debug)
-pub fn Relation::from_content(Map[String, Json]) -> Self?
-pub fn Relation::to_json(Self) -> Json
-pub impl ToJson for Relation
+  Unknown(Map[String, @json.Json])
+}
+pub fn Relation::from_content(Map[String, @json.Json]) -> Self?
+pub fn Relation::to_json(Self) -> @json.Json
+pub impl @json.ToJson for Relation
 
+#derive(Eq, @debug.Debug)
 pub struct StrippedState {
   kind_str : String
   state_key : String
   sender : String
-  content : Map[String, Json]
-} derive(Eq, @debug.Debug)
-pub fn StrippedState::to_json(Self) -> Json
-pub impl ToJson for StrippedState
+  content : Map[String, @json.Json]
+}
+pub fn StrippedState::to_json(Self) -> @json.Json
 pub impl @json.FromJson for StrippedState
+pub impl @json.ToJson for StrippedState
 
+#derive(Eq, @debug.Debug)
 pub struct Unsigned {
   age : Int64?
   transaction_id : String?
-  prev_content : Map[String, Json]?
-  redacted_because : Json?
-  raw : Map[String, Json]
-} derive(Eq, @debug.Debug)
+  prev_content : Map[String, @json.Json]?
+  redacted_because : @json.Json?
+  raw : Map[String, @json.Json]
+}
 
 // Type aliases
 

@@ -3,6 +3,7 @@
 
 ///|
 /// A subset of the filter language that a sync loop usually needs.
+#derive(Eq, Debug)
 pub struct Filter {
   /// Maximum number of events per room timeline.
   timeline_limit : Int32?
@@ -14,7 +15,7 @@ pub struct Filter {
   timeline_not_types : Array[String]
   /// Rooms to include; `None` means all.
   rooms : Array[@ids.RoomId]?
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Filter::new(

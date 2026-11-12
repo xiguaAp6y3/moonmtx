@@ -1,6 +1,7 @@
 // Message events: `m.room.message`, `m.reaction` and `m.relates_to`.
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum MsgType {
   Text
   Notice
@@ -12,7 +13,7 @@ pub(all) enum MsgType {
   Location
   /// Any other `msgtype`, kept verbatim.
   Other(String)
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn MsgType::parse(s : String) -> MsgType {
@@ -46,6 +47,7 @@ pub fn MsgType::as_str(self : MsgType) -> String {
 
 ///|
 /// The `m.relates_to` of an event.
+#derive(Eq, Debug)
 pub(all) enum Relation {
   /// A rich reply (`m.in_reply_to`) outside a thread.
   Reply(@ids.EventId)
@@ -58,7 +60,7 @@ pub(all) enum Relation {
   Thread(root~ : @ids.EventId, reply_to~ : @ids.EventId?)
   /// A `rel_type` this library does not model.
   Unknown(Map[String, Json])
-} derive(Eq, Debug)
+}
 
 ///|
 fn opt_event_id(m : Map[String, Json], key : String) -> @ids.EventId? {
@@ -133,6 +135,7 @@ pub impl ToJson for Relation with fn to_json(self) {
 
 ///|
 /// The content of an `m.room.message` event.
+#derive(Eq, Debug)
 pub struct MessageContent {
   msgtype : MsgType
   body : String
@@ -144,7 +147,7 @@ pub struct MessageContent {
   new_content : Map[String, Json]?
   /// The full content object, for media fields and anything else.
   raw : Map[String, Json]
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn MessageContent::decode(

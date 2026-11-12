@@ -5,23 +5,26 @@
 // response without `next_batch` is rejected, since the sync cannot continue.
 
 ///|
+#derive(Eq, Debug)
 pub struct Timeline {
   events : Array[@events.Event]
   /// More events happened since the previous sync than are listed here.
   limited : Bool
   /// Token to paginate backwards from the start of `events`.
   prev_batch : String?
-} derive(Eq, Debug)
+}
 
 ///|
 /// `summary` of a joined room. Fields are only sent when they change.
+#derive(Eq, Debug)
 pub struct RoomSummary {
   heroes : Array[String]?
   joined_member_count : Int64?
   invited_member_count : Int64?
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct JoinedRoom {
   room_id : @ids.RoomId
   summary : RoomSummary
@@ -33,29 +36,33 @@ pub struct JoinedRoom {
   account_data : Array[Json]
   notification_count : Int64?
   highlight_count : Int64?
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct InvitedRoom {
   room_id : @ids.RoomId
   invite_state : Array[@events.StrippedState]
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct KnockedRoom {
   room_id : @ids.RoomId
   knock_state : Array[@events.StrippedState]
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct LeftRoom {
   room_id : @ids.RoomId
   state : Array[@events.Event]
   timeline : Timeline
   account_data : Array[Json]
-} derive(Eq, Debug)
+}
 
 ///|
+#derive(Eq, Debug)
 pub struct SyncResponse {
   next_batch : String
   join : Array[JoinedRoom]
@@ -66,7 +73,7 @@ pub struct SyncResponse {
   account_data : Array[Json]
   /// Entries that were skipped, as `path: reason`.
   invalid : Array[String]
-} derive(Eq, Debug)
+}
 
 ///|
 priv struct Ctx {

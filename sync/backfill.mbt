@@ -24,6 +24,7 @@ pub fn messages_request(
 ///|
 /// A page of `/messages`, as sent: for backwards pagination `chunk` is
 /// newest first.
+#derive(Eq, Debug)
 pub struct Messages {
   /// Echoes the `from` token of the request.
   start : String
@@ -33,7 +34,7 @@ pub struct Messages {
   /// State needed to display `chunk`, e.g. lazy-loaded members.
   state : Array[@events.Event]
   invalid : Array[String]
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn parse_messages(resp : @api.Response) -> Messages raise @api.ApiError {

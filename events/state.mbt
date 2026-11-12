@@ -1,6 +1,7 @@
 // State event contents used by the room state store.
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Membership {
   Join
   Invite
@@ -8,7 +9,7 @@ pub(all) enum Membership {
   Ban
   Knock
   Other(String)
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Membership::parse(s : String) -> Membership {
@@ -36,13 +37,14 @@ pub fn Membership::as_str(self : Membership) -> String {
 
 ///|
 /// Content of `m.room.member`.
+#derive(Eq, Debug)
 pub struct MemberContent {
   membership : Membership
   displayname : String?
   avatar_url : String?
   reason : String?
   is_direct : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn MemberContent::decode(
@@ -96,6 +98,7 @@ fn levels(
 ///|
 /// Content of `m.room.power_levels`, with the spec defaults for missing
 /// keys.
+#derive(Eq, Debug)
 pub struct PowerLevels {
   ban : Int64
   kick : Int64
@@ -107,7 +110,7 @@ pub struct PowerLevels {
   events : Map[String, Int64]
   users : Map[String, Int64]
   notifications : Map[String, Int64]
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn PowerLevels::decode(
@@ -184,6 +187,7 @@ pub fn PowerLevels::can_send(
 
 ///|
 /// A typed view of an event's content.
+#derive(Eq, Debug)
 pub(all) enum EventKind {
   Message(MessageContent)
   Member(MemberContent)
@@ -194,7 +198,7 @@ pub(all) enum EventKind {
   Redaction
   /// A type this library does not model, or content that did not decode.
   Unknown
-} derive(Eq, Debug)
+}
 
 ///|
 fn decode_kind(e : Event) -> EventKind raise @json.JsonDecodeError {

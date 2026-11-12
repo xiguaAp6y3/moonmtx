@@ -28,11 +28,11 @@ pub const M_UNRECOGNIZED : String = "M_UNRECOGNIZED"
 
 pub fn client_v3(Array[Seg]) -> String
 
-pub fn create_room_request(name? : String, topic? : String, preset? : Preset, public? : Bool, invite? : Array[@ids.UserId], is_direct? : Bool, room_alias_name? : String, room_version? : String, initial_state? : Array[Json]) -> Request
+pub fn create_room_request(name? : String, topic? : String, preset? : Preset, public? : Bool, invite? : Array[@ids.UserId], is_direct? : Bool, room_alias_name? : String, room_version? : String, initial_state? : Array[@json.Json]) -> Request
 
-pub fn[T] decode_ok(Response, (Map[String, Json]) -> T raise @json.JsonDecodeError) -> T raise ApiError
+pub fn[T] decode_ok(Response, (Map[String, @json.Json]) -> T raise @json.JsonDecodeError) -> T raise ApiError
 
-pub fn expect_ok(Response) -> Map[String, Json] raise ApiError
+pub fn expect_ok(Response) -> Map[String, @json.Json] raise ApiError
 
 pub fn forget_request(@ids.RoomId) -> Request
 
@@ -78,11 +78,11 @@ pub fn refresh_request(String) -> Request
 
 pub fn retry_delay_ms(Response) -> Int64?
 
-pub fn send_request(@ids.RoomId, String, String, Json) -> Request
+pub fn send_request(@ids.RoomId, String, String, @json.Json) -> Request
 
-pub fn state_request(@ids.RoomId, String, Json, state_key? : String) -> Request
+pub fn state_request(@ids.RoomId, String, @json.Json, state_key? : String) -> Request
 
-pub fn typing_request(@ids.RoomId, @ids.UserId, Bool, timeout_ms? : Int) -> Request
+pub fn typing_request(@ids.RoomId, @ids.UserId, Bool, timeout_ms? : Int32) -> Request
 
 pub fn versions_request() -> Request
 
@@ -93,11 +93,12 @@ pub fn well_known_request() -> Request
 pub fn whoami_request() -> Request
 
 // Errors
+#derive(Eq, @debug.Debug)
 pub(all) suberror ApiError {
   Matrix(MatrixError)
-  Http(status~ : Int, body~ : String)
+  Http(status~ : Int32, body~ : String)
   Decode(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn ApiError::to_string(Self) -> String
 pub impl Show for ApiError
 
@@ -107,12 +108,13 @@ pub(all) enum Credentials {
   Token(String)
 }
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Discovery {
   Found(homeserver~ : String, identity_server~ : String?)
   Ignore
   FailPrompt(String)
   FailError(String)
-} derive(Eq, @debug.Debug)
+}
 
 pub(all) enum Identifier {
   User(String)
@@ -124,66 +126,73 @@ pub(all) enum JoinTarget {
   Alias(@ids.RoomAlias)
 }
 
+#derive(Eq, @debug.Debug)
 pub struct LoginFlow {
   kind : String
-  raw : Map[String, Json]
-} derive(Eq, @debug.Debug)
+  raw : Map[String, @json.Json]
+}
 
+#derive(Eq, @debug.Debug)
 pub struct MatrixError {
-  status : Int
+  status : Int32
   errcode : String
   error : String
   retry_after_ms : Int64?
   soft_logout : Bool
-  raw : Map[String, Json]
-} derive(Eq, @debug.Debug)
+  raw : Map[String, @json.Json]
+}
 pub fn MatrixError::is_rate_limited(Self) -> Bool
 pub fn MatrixError::is_unknown_token(Self) -> Bool
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Method {
   Get
   Post
   Put
   Delete
-} derive(Eq, @debug.Debug)
+}
 pub fn Method::as_str(Self) -> String
 
+#derive(Eq, @debug.Debug)
 pub(all) enum Preset {
   PrivateChat
   TrustedPrivateChat
   PublicChat
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq)
 pub struct Refreshed {
   access_token : String
   refresh_token : String?
   expires_in_ms : Int64?
-} derive(Eq)
+}
 
 pub struct Request {
   verb : Method
   path : String
   query : Array[(String, String)]
-  body : Json?
+  body : @json.Json?
   auth : Bool
 }
 pub fn Request::body_text(Self) -> String?
 pub fn Request::headers(Self, access_token? : String) -> Array[(String, String)]
-pub fn Request::new(Method, String, query? : Array[(String, String)], body? : Json, auth? : Bool) -> Self
+pub fn Request::new(Method, String, query? : Array[(String, String)], body? : @json.Json, auth? : Bool) -> Self
 pub fn Request::url(Self, String) -> String
 
+#derive(@debug.Debug)
 pub struct Response {
-  status : Int
+  status : Int32
   body : String
-  retry_after_s : Int?
-} derive(@debug.Debug)
-pub fn Response::new(Int, String, retry_after_s? : Int) -> Self
+  retry_after_s : Int32?
+}
+pub fn Response::new(Int32, String, retry_after_s? : Int32) -> Self
 
 pub(all) enum Seg {
   Lit(String)
   Var(String)
 }
 
+#derive(Eq)
 pub struct Session {
   user_id : @ids.UserId
   access_token : String
@@ -191,23 +200,25 @@ pub struct Session {
   refresh_token : String?
   expires_in_ms : Int64?
   homeserver : String?
-} derive(Eq)
+}
 pub fn Session::refreshed(Self, Refreshed) -> Self
-pub impl ToJson for Session
 pub impl @json.FromJson for Session
+pub impl @json.ToJson for Session
 
+#derive(Eq, @debug.Debug)
 pub struct Versions {
   versions : Array[String]
   unstable_features : Map[String, Bool]
-} derive(Eq, @debug.Debug)
+}
 pub fn Versions::has_feature(Self, String) -> Bool
 pub fn Versions::supports(Self, String) -> Bool
 
+#derive(Eq, @debug.Debug)
 pub struct WhoAmI {
   user_id : @ids.UserId
   device_id : String?
   is_guest : Bool
-} derive(Eq, @debug.Debug)
+}
 
 // Type aliases
 

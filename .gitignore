@@ -7,3 +7,6 @@ target
 AGENTS.md
 # 选题调研资料（本地留存，不入库）
 survey-*/
+# Local review artifacts; keep out of GitHub and MoonCake packages.
+docs/ACCEPTANCE-REVIEW-20261112.md
+docs/FIX-PLAN-20261112.md

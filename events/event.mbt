@@ -6,6 +6,7 @@
 
 ///|
 /// Server-added data that is not covered by the event signature.
+#derive(Eq, Debug)
 pub struct Unsigned {
   /// Milliseconds since the event was sent, as of when it was delivered.
   age : Int64?
@@ -16,7 +17,7 @@ pub struct Unsigned {
   /// The redaction event, if this event has been redacted.
   redacted_because : Json?
   raw : Map[String, Json]
-} derive(Eq, Debug)
+}
 
 ///|
 fn decode_unsigned(
@@ -37,6 +38,7 @@ fn decode_unsigned(
 
 ///|
 /// A room event as delivered by `/sync`, `/messages` or `/event`.
+#derive(Eq, Debug)
 pub struct Event {
   kind_str : String
   event_id : @ids.EventId
@@ -51,7 +53,7 @@ pub struct Event {
   content : Map[String, Json]
   unsigned : Unsigned?
   raw : Map[String, Json]
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Event::decode(
@@ -161,12 +163,13 @@ pub fn Event::in_room(self : Event, room_id : @ids.RoomId) -> Event {
 ///|
 /// A stripped state event, as found in invite and knock state. It has no
 /// event ID or timestamp.
+#derive(Eq, Debug)
 pub struct StrippedState {
   kind_str : String
   state_key : String
   sender : String
   content : Map[String, Json]
-} derive(Eq, Debug)
+}
 
 ///|
 pub impl @json.FromJson for StrippedState with fn from_json(json, path) {

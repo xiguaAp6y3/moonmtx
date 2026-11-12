@@ -3,10 +3,11 @@
 
 ///|
 /// A login type advertised by `GET /login`, e.g. `m.login.password`.
+#derive(Eq, Debug)
 pub struct LoginFlow {
   kind : String
   raw : Map[String, Json]
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn login_flows_request() -> Request {
@@ -97,6 +98,7 @@ pub fn login_request(
 
 ///|
 /// An authenticated session. Not `Debug`: it holds the access token.
+#derive(Eq)
 pub struct Session {
   user_id : @ids.UserId
   access_token : String
@@ -106,7 +108,7 @@ pub struct Session {
   expires_in_ms : Int64?
   /// Homeserver base URL suggested by the login response, if any.
   homeserver : String?
-} derive(Eq)
+}
 
 ///|
 fn decode_session(
@@ -180,11 +182,12 @@ pub fn parse_empty(resp : Response) -> Unit raise ApiError {
 }
 
 ///|
+#derive(Eq, Debug)
 pub struct WhoAmI {
   user_id : @ids.UserId
   device_id : String?
   is_guest : Bool
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn whoami_request() -> Request {
@@ -205,12 +208,13 @@ pub fn parse_whoami(resp : Response) -> WhoAmI raise ApiError {
 
 ///|
 /// New tokens from `POST /refresh`. Not `Debug`: it holds tokens.
+#derive(Eq)
 pub struct Refreshed {
   access_token : String
   /// A new refresh token; when absent, keep using the old one.
   refresh_token : String?
   expires_in_ms : Int64?
-} derive(Eq)
+}
 
 ///|
 pub fn refresh_request(refresh_token : String) -> Request {

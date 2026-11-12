@@ -70,9 +70,17 @@ pub async fn request(
 
 ///|
 /// Sends every queued message that is due. Transport failures are handed
-/// to the send queue, which schedules a retry.
-pub async fn flush_sends(c : @client.Client) -> Unit {
+/// to the send queue, which schedules a retry. With `persist`, each request
+/// is committed before network I/O; a save failure stops the flush. Discard
+/// the in-memory client after failure and restore the last committed snapshot.
+pub async fn flush_sends(
+  c : @client.Client,
+  persist? : async (Json) -> Unit,
+) -> Unit {
   while c.next_send(@async.now()) is Some((txn_id, req)) {
+    if persist is Some(f) {
+      f(c.snapshot())
+    }
     let resp = perform(req) catch {
       e => {
         ignore(c.outbox.on_transport_error(txn_id, e.to_string(), @async.now()))
@@ -85,8 +93,13 @@ pub async fn flush_sends(c : @client.Client) -> Unit {
 
 ///|
 /// Runs the sync loop: sends due messages, long-polls `/sync`, applies the
-/// response, calls `persist` with the snapshot, then `on_sync`. Stops when
-/// `on_sync` returns `false`. Rate limits and transport errors back off and
+/// response, runs `on_sync`, then commits the state and queued replies with
+/// `persist`, including when the callback returns `false`. Stops when
+/// `on_sync` returns `false`. Callbacks should enqueue replies, not perform
+/// external side effects: those require their own idempotency. If callback
+/// or persistence fails, discard this client and restore the last committed
+/// snapshot; uncommitted events will be replayed. Do not mutate or send from
+/// another task concurrently. Rate limits and transport errors back off and
 /// retry; other API errors (e.g. an invalid token) end the loop.
 pub async fn run_sync_loop(
   c : @client.Client,
@@ -96,7 +109,7 @@ pub async fn run_sync_loop(
 ) -> Unit {
   let mut delay_ms = 1000
   while true {
-    flush_sends(c)
+    flush_sends(c, persist?)
     let resp = perform(c.prepare(c.sync_request(timeout_ms~))) catch {
       _ => {
         @async.sleep(delay_ms)
@@ -118,10 +131,11 @@ pub async fn run_sync_loop(
       e => raise e
     }
     delay_ms = 1000
+    let keep_running = on_sync(summary)
     if persist is Some(f) {
       f(c.snapshot())
     }
-    if !on_sync(summary) {
+    if !keep_running {
       break
     }
   }

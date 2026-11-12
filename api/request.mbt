@@ -5,12 +5,13 @@
 // matching parser.
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Method {
   Get
   Post
   Put
   Delete
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Method::as_str(self : Method) -> String {
@@ -86,7 +87,7 @@ pub fn Request::url(self : Request, base_url : String) -> String {
   let sb = StringBuilder()
   let base = match base_url.strip_suffix("/") {
     Some(b) => b
-    None => base_url.view()
+    None => base_url.clamped_view()
   }
   sb.write_view(base)
   sb.write_string(self.path)
@@ -124,12 +125,13 @@ pub fn Request::body_text(self : Request) -> String? {
 
 ///|
 /// An HTTP response as seen by the SDK.
+#derive(Debug)
 pub struct Response {
   status : Int32
   body : String
   /// Value of the `Retry-After` header in seconds, if the transport saw one.
   retry_after_s : Int32?
-} derive(Debug)
+}
 
 ///|
 pub fn Response::new(

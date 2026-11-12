@@ -36,8 +36,8 @@ async fn login(
   let req = @api.login_request(Password(User(user), password~))
   let session = @api.parse_login(@transport.request(hs, req))
   match filter {
-    Some(f) => @client.Client::new(hs, session, filter=f)
-    None => @client.Client::new(hs, session)
+    Some(f) => @client.Client::new(hs, session, txn_prefix="interop", filter=f)
+    None => @client.Client::new(hs, session, txn_prefix="interop")
   }
 }
 

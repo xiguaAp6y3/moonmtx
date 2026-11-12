@@ -44,10 +44,10 @@ moonmtx 负责构造请求、解析响应，并在两者之间维护 Matrix 客�
 使用自带的 native 传输层：
 
 ```moonbit
-async fn run(homeserver : String, user : String, password : String) -> Unit {
+async fn run(homeserver : String, user : String, password : String, txn_prefix : String) -> Unit {
   let login = @api.login_request(Password(User(user), password~))
   let session = @api.parse_login(@transport.request(homeserver, login))
-  let c = @client.Client::new(homeserver, session)
+  let c = @client.Client::new(homeserver, session, txn_prefix~)
   @transport.run_sync_loop(c, summary => {
     for r in summary.rooms {
       for e in r.events {
@@ -67,13 +67,23 @@ async fn run(homeserver : String, user : String, password : String) -> Unit {
 let req = c.prepare(c.sync_request())       // verb, url, headers, body
 let resp = @api.Response::new(status, body) // from your HTTP client
 let summary = c.on_sync_response(resp)
+// 处理 summary 并入队回复，然后原子保存 c.snapshot()。
 while c.next_send(now_ms) is Some((txn_id, req)) {
+  // 发送 req 前先原子保存 c.snapshot()（包括事务 ID 与计数）。
   // send req, then:
   ignore(c.on_send_response(txn_id, @api.Response::new(status, body), now_ms))
 }
 ```
 
-每次同步后用一次原子写入保存 `c.snapshot()`，用 `Client::restore` 恢复。
+每次新建 `Client::new` 必须提供唯一 `txn_prefix`，例如系统随机生成的 128 位值。
+恢复时用 `Client::restore` 读取最近成功提交的快照。不要恢复旧备份后继续用同一设备
+发送消息：旧计数可能落后于服务端已经接收的消息。
+
+传入 `persist` 时，`run_sync_loop` 先执行业务回调，再将状态和回调入队的回复一起保存，
+并在每次发送前保存一次队列。`persist` 必须原子替换旧快照，写入成功后才能返回。
+回调或保存失败后，丢弃当前客户端，从已提交的快照恢复，未提交批次会重新处理。
+循环应由单一任务持有；回调只入队回复，其他外部副作用需自行实现幂等。
+不传 `persist` 就没有崩溃恢复保证；单独调用 `flush_sends` 也可以传入它。
 快照不含访问令牌；`Session` 需作为机密单独保存。
 
 ### 示例机器人
@@ -82,8 +92,8 @@ while c.next_send(now_ms) is Some((txn_id, req)) {
 MATRIX_HOMESERVER=https://matrix.example.org MATRIX_USER=@bot:example.org MATRIX_PASSWORD=secret MATRIX_STATE=bot.json moon run --target native cmd/echo_bot
 ```
 
-它会用 notice 回复 `!echo <文本>`。设置 `MATRIX_STATE` 后，重启时无需重新
-登录，也不会回复旧消息。
+它会用 notice 回复 `!echo <文本>`。设置 `MATRIX_STATE` 后，重启时无需重新登录，
+未提交批次会重新处理，已提交批次不会重复回调。状态文件放在私有目录，同一文件只运行一个机器人。
 
 ## 开发
 
@@ -100,8 +110,8 @@ moon fmt
 ```
 
 用 `git config core.hooksPath .githooks` 启用 pre-commit 钩子。
-CI 把工具链固定为 `0.10.15+943464bfa`，因为 `moonbitlang/async@0.22.4`
-必须与核心库版本一致。
+CI 固定使用本地验证过的 `0.10.20+65efd5b93` 和 `moonbitlang/async@0.22.4`，
+升级时需重新验证两者的组合。
 
 ## 互通验证
 

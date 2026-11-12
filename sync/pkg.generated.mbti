@@ -10,9 +10,9 @@ import {
 }
 
 // Values
-pub const SNAPSHOT_VERSION : Int = 1
+pub const SNAPSHOT_VERSION : Int32 = 1
 
-pub fn messages_request(@ids.RoomId, String, limit? : Int, filter? : Filter) -> @api.Request
+pub fn messages_request(@ids.RoomId, String, limit? : Int32, filter? : Filter) -> @api.Request
 
 pub fn parse_filter_id(@api.Response) -> String raise @api.ApiError
 
@@ -20,80 +20,87 @@ pub fn parse_messages(@api.Response) -> Messages raise @api.ApiError
 
 pub fn parse_sync(@api.Response) -> SyncResponse raise @api.ApiError
 
-pub fn sync_request(since? : String, filter? : FilterRef, timeout_ms? : Int, full_state? : Bool, set_presence? : String) -> @api.Request
+pub fn sync_request(since? : String, filter? : FilterRef, timeout_ms? : Int32, full_state? : Bool, set_presence? : String) -> @api.Request
 
 pub fn upload_filter_request(@ids.UserId, Filter) -> @api.Request
 
 // Errors
+#derive(Eq, @debug.Debug)
 pub(all) suberror StoreError {
   UnknownRoom(@ids.RoomId)
   StaleToken(String)
   BadSnapshot(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn StoreError::to_string(Self) -> String
 pub impl Show for StoreError
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub struct Filter {
-  timeline_limit : Int?
+  timeline_limit : Int32?
   lazy_load_members : Bool
   timeline_types : Array[String]?
   timeline_not_types : Array[String]
   rooms : Array[@ids.RoomId]?
-} derive(Eq, @debug.Debug)
-pub fn Filter::new(timeline_limit? : Int, lazy_load_members? : Bool, timeline_types? : Array[String], timeline_not_types? : Array[String], rooms? : Array[@ids.RoomId]) -> Self
-pub fn Filter::to_json(Self) -> Json
-pub impl ToJson for Filter
+}
+pub fn Filter::new(timeline_limit? : Int32, lazy_load_members? : Bool, timeline_types? : Array[String], timeline_not_types? : Array[String], rooms? : Array[@ids.RoomId]) -> Self
+pub fn Filter::to_json(Self) -> @json.Json
+pub impl @json.ToJson for Filter
 
 pub(all) enum FilterRef {
   Inline(Filter)
   Id(String)
 }
 
+#derive(Eq, @debug.Debug)
 pub struct InvitedRoom {
   room_id : @ids.RoomId
   invite_state : Array[@events.StrippedState]
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub struct JoinedRoom {
   room_id : @ids.RoomId
   summary : RoomSummary
   state : Array[@events.Event]
   timeline : Timeline
-  ephemeral : Array[Json]
-  account_data : Array[Json]
+  ephemeral : Array[@json.Json]
+  account_data : Array[@json.Json]
   notification_count : Int64?
   highlight_count : Int64?
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub struct KnockedRoom {
   room_id : @ids.RoomId
   knock_state : Array[@events.StrippedState]
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub struct LeftRoom {
   room_id : @ids.RoomId
   state : Array[@events.Event]
   timeline : Timeline
-  account_data : Array[Json]
-} derive(Eq, @debug.Debug)
+  account_data : Array[@json.Json]
+}
 
+#derive(Eq, @debug.Debug)
 pub struct Messages {
   start : String
   end : String?
   chunk : Array[@events.Event]
   state : Array[@events.Event]
   invalid : Array[String]
-} derive(Eq, @debug.Debug)
+}
 
 pub struct Room {
   room_id : @ids.RoomId
   // private fields
 }
-pub fn Room::account_data(Self, String) -> Json?
+pub fn Room::account_data(Self, String) -> @json.Json?
 pub fn Room::back_token(Self) -> String?
 pub fn Room::display_name(Self, String) -> String
-pub fn Room::ephemeral(Self, String) -> Json?
+pub fn Room::ephemeral(Self, String) -> @json.Json?
 pub fn Room::events(Self) -> Array[@events.Event]
 pub fn Room::gaps(Self) -> Array[String]
 pub fn Room::member_content(Self, String) -> @events.MemberContent?
@@ -107,64 +114,70 @@ pub fn Room::timeline(Self) -> Array[TimelineItem]
 pub fn Room::typing(Self) -> Array[String]
 pub fn Room::unread(Self) -> (Int64, Int64)
 
+#derive(Eq, @debug.Debug)
 pub struct RoomSummary {
   heroes : Array[String]?
   joined_member_count : Int64?
   invited_member_count : Int64?
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub struct RoomUpdate {
   room_id : @ids.RoomId
   membership : @events.Membership
   events : Array[@events.Event]
   gap : String?
-} derive(Eq, @debug.Debug)
+}
 
 pub struct Store {
   // private fields
 }
-pub fn Store::account_data(Self, String) -> Json?
+pub fn Store::account_data(Self, String) -> @json.Json?
 pub fn Store::apply(Self, SyncResponse) -> SyncSummary
 pub fn Store::fill_gap(Self, @ids.RoomId, Messages) -> Array[@events.Event] raise StoreError
-pub fn Store::from_json(Json) -> Self raise StoreError
+pub fn Store::from_json(@json.Json) -> Self raise StoreError
 pub fn Store::invites(Self) -> Map[@ids.RoomId, Array[@events.StrippedState]]
 pub fn Store::knocks(Self) -> Map[@ids.RoomId, Array[@events.StrippedState]]
-pub fn Store::new(timeline_cap? : Int) -> Self
+pub fn Store::new(timeline_cap? : Int32) -> Self
 pub fn Store::paginate_back(Self, @ids.RoomId, Messages) -> Array[@events.Event] raise StoreError
 pub fn Store::room(Self, @ids.RoomId) -> Room?
 pub fn Store::rooms(Self) -> Array[Room]
 pub fn Store::since(Self) -> String?
-pub fn Store::to_json(Self) -> Json
-pub impl ToJson for Store
+pub fn Store::to_json(Self) -> @json.Json
+pub impl @json.ToJson for Store
 
+#derive(Eq, @debug.Debug)
 pub struct SyncResponse {
   next_batch : String
   join : Array[JoinedRoom]
   invite : Array[InvitedRoom]
   knock : Array[KnockedRoom]
   leave : Array[LeftRoom]
-  account_data : Array[Json]
+  account_data : Array[@json.Json]
   invalid : Array[String]
-} derive(Eq, @debug.Debug)
-pub fn SyncResponse::decode(Map[String, Json]) -> Self raise @json.JsonDecodeError
+}
+pub fn SyncResponse::decode(Map[String, @json.Json]) -> Self raise @json.JsonDecodeError
 
+#derive(Eq, @debug.Debug)
 pub struct SyncSummary {
   next_batch : String
   rooms : Array[RoomUpdate]
   invited : Array[@ids.RoomId]
   invalid : Array[String]
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub struct Timeline {
   events : Array[@events.Event]
   limited : Bool
   prev_batch : String?
-} derive(Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub(all) enum TimelineItem {
   Event(@events.Event)
   Gap(String)
-} derive(Eq, @debug.Debug)
+}
 
 // Type aliases
 

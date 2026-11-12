@@ -26,6 +26,7 @@ async fn save(path : String, session : @api.Session, snapshot : Json) -> Unit {
     doc.stringify(),
     create_mode=CreateOrTruncate,
     permission=0o600,
+    sync=Full,
   )
   @fs.rename(tmp, path, replace=true)
 }
@@ -54,7 +55,9 @@ async fn login(homeserver : String) -> @client.Client {
   )
   let session = @api.parse_login(@transport.request(homeserver, req))
   println("logged in as \{session.user_id} on device \{session.device_id}")
-  @client.Client::new(homeserver, session)
+  guard @env.rand(16) is Some(bytes) else { fail("OS randomness unavailable") }
+  let txn_prefix = bytes.to_array().map(b => b.to_int().to_string()).join("-")
+  @client.Client::new(homeserver, session, txn_prefix~)
 }
 
 ///|

@@ -18,11 +18,12 @@ priv struct Chunk {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum TimelineItem {
   Event(@events.Event)
   /// Missing events; fill with `Store::fill_gap` using this token.
   Gap(String)
-} derive(Eq, Debug)
+}
 
 ///|
 pub struct Room {

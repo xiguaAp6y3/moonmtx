@@ -77,7 +77,7 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
 
 ## M6 幂等发送（send）✅
 
-- [x] 事务 ID：设备级前缀 + 单调计数，计数随快照持久化，重启后不撞号
+- [x] 事务 ID：设备 + 调用方提供的唯一会话前缀 + 单调计数；发送前保存，恢复最近已提交快照后继续计数
 - [x] 待发队列：同一房间按序、一次一条；不同房间互不阻塞；失败的不堵后续
 - [x] 重试复用同一事务 ID；`M_LIMIT_EXCEEDED` 按服务器给的延迟，5xx/传输错误指数退避，4xx 立即失败
 - [x] 本地回显：用 `unsigned.transaction_id` 匹配 /sync 回来的事件，回显先于或晚于响应都正确
@@ -90,6 +90,7 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
 - [x] `client`：组合会话、同步存储、发送队列；`prepare` 产出带绝对 URL/令牌头/正文的请求；快照与恢复
 - [x] `transport`（仅 native）：基于 `moonbitlang/async` 的 HTTP 传输与同步循环（限流/5xx/断网退避重试）
 - [x] 示例：`cmd/echo_bot`，状态文件 0600 权限、临时文件 + rename 原子写入，重启续传
+- [x] 回调入队后提交状态与令牌；每次发送前提交队列；故障测试覆盖回调/保存失败、发送后崩溃与恢复续发
 - 验收：`transport_test.mbt` 用本机假 homeserver 走真实 HTTP，覆盖 429 重试、发送、回显、续传
 
 ## M8 互通验证与发布
@@ -107,7 +108,7 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
 
 - E2EE（Olm/Megolm、设备密钥、跨签名、密钥备份）
 - 媒体上传/下载、缩略图
-- 收据 / presence / read markers 的写入（只解析 ephemeral 原始数据）
+- presence / read markers 写入；收据仅提供请求构造，不提供自动已读管理
 - 联邦 Server-Server API、Application Service API、推送网关
 - 完整房间管理（kick/ban/升级/空间）
 

@@ -73,11 +73,12 @@ pub fn parse_event_id(resp : Response) -> @ids.EventId raise ApiError {
 }
 
 ///|
+#derive(Eq, Debug)
 pub(all) enum Preset {
   PrivateChat
   TrustedPrivateChat
   PublicChat
-} derive(Eq, Debug)
+}
 
 ///|
 fn Preset::as_str(self : Preset) -> String {

@@ -42,7 +42,11 @@ fn message(id : String, txn? : String) -> Json {
 
 ///|
 test "prepare adds the base url and token" {
-  let c = @client.Client::new("https://hs.example.org/", session())
+  let c = @client.Client::new(
+    "https://hs.example.org/",
+    session(),
+    txn_prefix="test",
+  )
   let p = c.prepare(@api.whoami_request())
   assert_eq(p.verb, Get)
   assert_eq(p.url, "https://hs.example.org/_matrix/client/v3/account/whoami")
@@ -54,7 +58,7 @@ test "prepare adds the base url and token" {
 
 ///|
 test "sync loop: initial then long-poll from the stored token" {
-  let c = @client.Client::new("https://hs", session())
+  let c = @client.Client::new("https://hs", session(), txn_prefix="test")
   let first = c.prepare(c.sync_request())
   assert_true(first.url.contains("timeout=0"), msg=first.url)
   assert_false(first.url.contains("since="))
@@ -69,7 +73,7 @@ test "sync loop: initial then long-poll from the stored token" {
 
 ///|
 test "send, then the echo arrives through sync" {
-  let c = @client.Client::new("https://hs", session())
+  let c = @client.Client::new("https://hs", session(), txn_prefix="test")
   ignore(c.on_sync_response(@api.Response::new(200, sync_body("s1", []))))
   let r = @ids.RoomId::parse(room)
   let txn = c.send_text(r, "hello")
@@ -99,7 +103,7 @@ test "send, then the echo arrives through sync" {
 
 ///|
 test "snapshot and restore resume both sync and sending" {
-  let c = @client.Client::new("https://hs", session())
+  let c = @client.Client::new("https://hs", session(), txn_prefix="test")
   ignore(
     c.on_sync_response(
       @api.Response::new(200, sync_body("s1", [message("$1")])),
@@ -125,7 +129,7 @@ test "snapshot and restore resume both sync and sending" {
 
 ///|
 test "auth errors from sync surface as api errors" {
-  let c = @client.Client::new("https://hs", session())
+  let c = @client.Client::new("https://hs", session(), txn_prefix="test")
   let r = try
     c.on_sync_response(
       @api.Response::new(
@@ -141,4 +145,16 @@ test "auth errors from sync surface as api errors" {
   assert_true(r)
   // The store is untouched.
   assert_eq(c.store.since(), None)
+}
+
+///|
+test "fresh clients on one device use separate transaction namespaces" {
+  let a = @client.Client::new("https://hs", session(), txn_prefix="start-a")
+  let b = @client.Client::new("https://hs", session(), txn_prefix="start-b")
+  let r = @ids.RoomId::parse(room)
+  let first = a.send_text(r, "one")
+  let second = b.send_text(r, "two")
+  assert_true(first != second)
+  let resumed = @client.Client::restore("https://hs", session(), a.snapshot())
+  assert_true(resumed.send_text(r, "three") != first)
 }

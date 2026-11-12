@@ -4,6 +4,7 @@
 ///|
 /// The outcome of a `.well-known/matrix/client` lookup, following the
 /// spec's IGNORE / FAIL_PROMPT / FAIL_ERROR states.
+#derive(Eq, Debug)
 pub(all) enum Discovery {
   /// A usable homeserver (and optional identity server) base URL.
   Found(homeserver~ : String, identity_server~ : String?)
@@ -13,7 +14,7 @@ pub(all) enum Discovery {
   FailPrompt(String)
   /// The file names an invalid server; stop and report the error.
   FailError(String)
-} derive(Eq, Debug)
+}
 
 ///|
 /// Base URL for the well-known lookup: `https://` plus the hostname of the
@@ -43,7 +44,7 @@ fn is_base_url(url : String) -> Bool {
       }
   }
   let host = match rest.find("/") {
-    Some(i) => rest.view(end_offset=i)
+    Some(i) => rest.clamped_view(end=i)
     None => rest
   }
   !host.is_empty() && !host.contains_any(chars=" ?#@")
@@ -102,10 +103,11 @@ pub fn parse_well_known(resp : Response) -> Discovery {
 
 ///|
 /// Spec versions and unstable features advertised by a homeserver.
+#derive(Eq, Debug)
 pub struct Versions {
   versions : Array[String]
   unstable_features : Map[String, Bool]
-} derive(Eq, Debug)
+}
 
 ///|
 pub fn Versions::supports(self : Versions, version : String) -> Bool {

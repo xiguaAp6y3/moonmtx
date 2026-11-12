@@ -7,78 +7,84 @@ import {
 }
 
 // Values
-pub const MAX_ID_BYTES : Int = 255
+pub const MAX_ID_BYTES : Int32 = 255
 
 // Errors
+#derive(Eq, @debug.Debug)
 pub(all) suberror IdError {
   Empty
   BadSigil(expected~ : Char, input~ : String)
-  TooLong(Int)
+  TooLong(Int32)
   MissingServerName(String)
   InvalidServerName(String)
   InvalidLocalpart(String)
-} derive(Eq, @debug.Debug)
+}
 pub fn IdError::to_string(Self) -> String
 pub impl Show for IdError
 
 // Types and methods
+#derive(Compare, Eq, Hash, @debug.Debug)
 pub struct EventId {
   raw : String
-} derive(Compare, Eq, Hash, @debug.Debug)
+}
 pub fn EventId::as_str(Self) -> String
 pub fn EventId::parse(String) -> Self raise IdError
-pub fn EventId::to_json(Self) -> Json
+pub fn EventId::to_json(Self) -> @json.Json
 pub fn EventId::to_string(Self) -> String
 pub impl Show for EventId
-pub impl ToJson for EventId
 pub impl @json.FromJson for EventId
+pub impl @json.ToJson for EventId
 
+#derive(Eq, Hash, @debug.Debug)
 pub struct RoomAlias {
   localpart : String
   server : ServerName
-} derive(Eq, Hash, @debug.Debug)
+}
 pub fn RoomAlias::parse(String) -> Self raise IdError
-pub fn RoomAlias::to_json(Self) -> Json
+pub fn RoomAlias::to_json(Self) -> @json.Json
 pub fn RoomAlias::to_string(Self) -> String
 pub impl Show for RoomAlias
-pub impl ToJson for RoomAlias
 pub impl @json.FromJson for RoomAlias
+pub impl @json.ToJson for RoomAlias
 
+#derive(Compare, Eq, Hash, @debug.Debug)
 pub struct RoomId {
   raw : String
-} derive(Compare, Eq, Hash, @debug.Debug)
+}
 pub fn RoomId::as_str(Self) -> String
 pub fn RoomId::parse(String) -> Self raise IdError
 pub fn RoomId::server_name(Self) -> ServerName?
-pub fn RoomId::to_json(Self) -> Json
+pub fn RoomId::to_json(Self) -> @json.Json
 pub fn RoomId::to_string(Self) -> String
 pub impl Show for RoomId
-pub impl ToJson for RoomId
 pub impl @json.FromJson for RoomId
+pub impl @json.ToJson for RoomId
 
+#derive(Eq, Hash, @debug.Debug)
 pub struct ServerName {
   host : String
-  port : Int?
-} derive(Eq, Hash, @debug.Debug)
+  port : Int32?
+}
 pub fn ServerName::parse(String) -> Self raise IdError
-pub fn ServerName::to_json(Self) -> Json
+pub fn ServerName::to_json(Self) -> @json.Json
 pub fn ServerName::to_string(Self) -> String
 pub impl Show for ServerName
-pub impl ToJson for ServerName
 pub impl @json.FromJson for ServerName
+pub impl @json.ToJson for ServerName
 
+#derive(Eq, Hash, @debug.Debug)
 pub struct UserId {
   localpart : String
   server : ServerName
-} derive(Eq, Hash, @debug.Debug)
+}
 pub fn UserId::is_compliant(Self) -> Bool
 pub fn UserId::new(String, ServerName) -> Self raise IdError
 pub fn UserId::parse(String) -> Self raise IdError
-pub fn UserId::to_json(Self) -> Json
+pub fn UserId::to_json(Self) -> @json.Json
 pub fn UserId::to_string(Self) -> String
 pub impl Show for UserId
-pub impl ToJson for UserId
 pub impl @json.FromJson for UserId
+pub impl @json.ToJson for UserId
 
 // Type aliases
 

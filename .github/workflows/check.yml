@@ -8,7 +8,7 @@ on:
 env:
   # Pinned to the toolchain the code is developed with: moonbitlang/async in
   # moon.mod must match this core library version.
-  MOONBIT_INSTALL_VERSION: 0.10.15+943464bfa
+  MOONBIT_INSTALL_VERSION: 0.10.20+65efd5b93
 
 jobs:
   check:
@@ -36,7 +36,8 @@ jobs:
       - run: moon version --all
       - run: moon update
       - run: moon check --target all --deny-warn
-      - run: moon test --target all
+      - run: moon test --target all --deny-warn
+      - run: moon build --target all --deny-warn
       - run: moon fmt --check
 
   interop:
