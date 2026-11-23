@@ -11,7 +11,7 @@ on every MoonBit target and works with any HTTP client. A native transport
 based on `moonbitlang/async` is included.
 
 Targets the [Matrix specification v1.19](https://spec.matrix.org/v1.19/client-server-api/).
-Status: 0.1 in development. See [docs/ROADMAP.md](docs/ROADMAP.md).
+Status: 0.1.0 published on [mooncakes.io](https://mooncakes.io/docs/xiguaAp6y3/moonmtx). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## What it does
 
@@ -41,6 +41,12 @@ Not in 0.1: end-to-end encryption, media, federation, application services.
 | `client` | `Client`: a session combining the above; `prepare` makes HTTP-ready requests |
 | `transport` | Native only: HTTP with `moonbitlang/async`, `run_sync_loop` |
 | `cmd/echo_bot` | Example bot |
+
+## Installation
+
+```bash
+moon add xiguaAp6y3/moonmtx
+```
 
 ## Usage
 

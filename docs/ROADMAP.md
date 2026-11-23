@@ -93,7 +93,7 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
 - [x] 回调入队后提交状态与令牌；每次发送前提交队列；故障测试覆盖回调/保存失败、发送后崩溃与恢复续发
 - 验收：`transport_test.mbt` 用本机假 homeserver 走真实 HTTP，覆盖 429 重试、发送、回显、续传
 
-## M8 互通验证与发布
+## M8 互通验证与发布 ✅
 
 - [x] Synapse 互通：`interop/run.sh` 起一次性 Synapse（Docker，v1.164.2），`interop/main.mbt`
       由 SDK 发起全部请求，10 个场景：发现、两用户登录与 whoami、建房邀请加入、按序发送与回显、
@@ -101,8 +101,8 @@ transport  （仅 native）基于 moonbitlang/async 的传输实现；cmd/echo_b
       向前翻页到 `m.room.create`、退出房间；本地连续 4 次全部通过；CI 增加 interop 任务
       （不是跑 SyTest 原套件；Synapse 1.164.2 公布的最高规范版本为 v1.17，所用端点均在其中）
 - [x] README 用法与包说明；`docs/upstream.md` 记录规范版本、许可证、夹具来源与相关项目
-- [ ] mooncakes.io 发布 0.1.0
-- [ ] 申报材料（人工撰写）与提交前自查
+- [x] mooncakes.io 发布 0.1.0
+- [x] 申报材料（人工撰写）与提交前自查
 
 ## 边界（首版明确不做）
 

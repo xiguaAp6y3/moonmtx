@@ -10,7 +10,7 @@ moonmtx 负责构造请求、解析响应，并在两者之间维护 Matrix 客�
 `moonbitlang/async` 的 native 传输层。
 
 对应 [Matrix 规范 v1.19](https://spec.matrix.org/v1.19/client-server-api/)。
-状态：0.1 开发中，见 [docs/ROADMAP.md](docs/ROADMAP.md)。
+状态：0.1.0 已发布至 [mooncakes.io](https://mooncakes.io/docs/xiguaAp6y3/moonmtx)，见 [docs/ROADMAP.md](docs/ROADMAP.md)。
 
 ## 功能
 
@@ -38,6 +38,12 @@ moonmtx 负责构造请求、解析响应，并在两者之间维护 Matrix 客�
 | `client` | `Client`：组合以上各包的会话；`prepare` 生成可直接发送的 HTTP 请求 |
 | `transport` | 仅 native：基于 `moonbitlang/async` 的 HTTP 与 `run_sync_loop` |
 | `cmd/echo_bot` | 示例机器人 |
+
+## 安装
+
+```bash
+moon add xiguaAp6y3/moonmtx
+```
 
 ## 用法
 
