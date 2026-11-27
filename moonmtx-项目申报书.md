@@ -53,7 +53,8 @@ moonmtx 按规范手写 sans-IO 内核，端点只实现同步、发送和房间
 
 **预期验收产物**
 
-- 在 mooncakes.io 发布 `xiguaAp6y3/moonmtx` 0.1.0，可直接 `moon add`；
-- 测试：wasm / wasm-gc / js 各 84 个、native 89 个，全部通过；CI 在 Linux / macOS / Windows 上配置 check、build、test、fmt；
+- 工具链与依赖：适配 `moonc v1.0.0-rc1+3c0520448`（满足 `moonc >= 1.0.0-rc1` 要求）与 `moonbitlang/async@0.22.11`；
+- 包发布：已在 mooncakes.io 发布 `xiguaAp6y3/moonmtx` 0.1.1，可直接 `moon add`；
+- 测试与 CI：wasm / wasm-gc / js 各 84 个、native 89 个（含 `transport` 本机 HTTP 测试 5 个）；CI 在 Linux / macOS / Windows 上基于 `1.0.0-rc1+3c0520448` 运行 `check`、`build`、`test`、`fmt`（`--target all --deny-warn`）；
 - `interop/run.sh` 在 Docker 中启动 Synapse 1.164.2，所有请求由 moonmtx 发出，覆盖登录、建房邀请加入、按序发送与回显、事务重试、崩溃后从快照恢复、缺口回填、编辑 / 反应 / 撤回、翻页、退房共 10 个场景；
 - 中英双语 README 与可运行的 echo bot 示例。

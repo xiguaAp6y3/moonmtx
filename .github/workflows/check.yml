@@ -8,7 +8,7 @@ on:
 env:
   # Pinned to the toolchain the code is developed with: moonbitlang/async in
   # moon.mod must match this core library version.
-  MOONBIT_INSTALL_VERSION: 0.10.20+65efd5b93
+  MOONBIT_INSTALL_VERSION: 1.0.0-rc1+3c0520448
 
 jobs:
   check:

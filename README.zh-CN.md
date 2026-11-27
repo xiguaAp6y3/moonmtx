@@ -10,7 +10,7 @@ moonmtx 负责构造请求、解析响应，并在两者之间维护 Matrix 客�
 `moonbitlang/async` 的 native 传输层。
 
 对应 [Matrix 规范 v1.19](https://spec.matrix.org/v1.19/client-server-api/)。
-状态：0.1.0 已发布至 [mooncakes.io](https://mooncakes.io/docs/xiguaAp6y3/moonmtx)，见 [docs/ROADMAP.md](docs/ROADMAP.md)。
+状态：0.1.1 已发布至 [mooncakes.io](https://mooncakes.io/docs/xiguaAp6y3/moonmtx)，见 [docs/ROADMAP.md](docs/ROADMAP.md)。
 
 ## 功能
 
@@ -32,7 +32,7 @@ moonmtx 负责构造请求、解析响应，并在两者之间维护 Matrix 客�
 | --- | --- |
 | `ids` | 用户 / 房间 / 事件 ID、房间别名、服务器名 |
 | `api` | `Request`/`Response`、错误模型、服务器发现、登录、房间端点 |
-| `events` | 事件外壳、消息内容与关系、状态内容、重定向（删减） |
+| `events` | 事件外壳、消息内容与关系、状态内容、撤回（删减） |
 | `sync` | 过滤器、`/sync` 解析、`Store`、缺口回填、快照 |
 | `send` | `Outbox`：幂等发送队列 |
 | `client` | `Client`：组合以上各包的会话；`prepare` 生成可直接发送的 HTTP 请求 |
@@ -116,7 +116,7 @@ moon fmt
 ```
 
 用 `git config core.hooksPath .githooks` 启用 pre-commit 钩子。
-CI 固定使用本地验证过的 `0.10.20+65efd5b93` 和 `moonbitlang/async@0.22.4`，
+CI 固定使用本地验证过的 `1.0.0-rc1+3c0520448` 和 `moonbitlang/async@0.22.11`，
 升级时需重新验证两者的组合。
 
 ## 互通验证

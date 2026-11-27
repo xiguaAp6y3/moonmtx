@@ -3,7 +3,7 @@
 
 name = "xiguaAp6y3/moonmtx"
 
-version = "0.1.0"
+version = "0.1.1"
 
 readme = "README.md"
 
@@ -15,10 +15,8 @@ keywords = [ "matrix", "matrix-org", "chat", "im", "client-server-api", "sdk" ]
 
 preferred_target = "wasm"
 
-warnings = "-implicit_impl_as_method"
-
 description = "Matrix Client-Server API SDK core for MoonBit: identifiers, event model, request builders, error model and a resumable /sync state machine. Sans-IO; bring your own HTTP transport."
 
 import {
-  "moonbitlang/async@0.22.4",
+  "moonbitlang/async@0.22.11",
 }

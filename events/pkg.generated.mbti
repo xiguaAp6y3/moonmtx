@@ -33,7 +33,7 @@ pub struct Event {
   unsigned : Unsigned?
   raw : Map[String, @json.Json]
 }
-pub fn Event::decode(@json.Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn Event::decode(@json.Json, @json.DecodeContext) -> Self raise @json.JsonDecodeError
 pub fn Event::event_type(Self) -> String
 pub fn Event::in_room(Self, @ids.RoomId) -> Self
 pub fn Event::is_redacted(Self) -> Bool
@@ -68,7 +68,7 @@ pub struct MemberContent {
   reason : String?
   is_direct : Bool
 }
-pub fn MemberContent::decode(Map[String, @json.Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn MemberContent::decode(Map[String, @json.Json], @json.DecodeContext) -> Self raise @json.JsonDecodeError
 
 #derive(Eq, @debug.Debug)
 pub(all) enum Membership {
@@ -92,7 +92,7 @@ pub struct MessageContent {
   new_content : Map[String, @json.Json]?
   raw : Map[String, @json.Json]
 }
-pub fn MessageContent::decode(Map[String, @json.Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn MessageContent::decode(Map[String, @json.Json], @json.DecodeContext) -> Self raise @json.JsonDecodeError
 pub fn MessageContent::in_thread(Self, @ids.EventId, reply_to? : @ids.EventId) -> Self
 pub fn MessageContent::new(MsgType, String, html? : String, relation? : Relation) -> Self
 pub fn MessageContent::replacement(Self) -> Self?
@@ -130,7 +130,7 @@ pub struct PowerLevels {
 }
 pub fn PowerLevels::absent(String?) -> Self
 pub fn PowerLevels::can_send(Self, String, String, is_state~ : Bool) -> Bool
-pub fn PowerLevels::decode(Map[String, @json.Json], @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn PowerLevels::decode(Map[String, @json.Json], @json.DecodeContext) -> Self raise @json.JsonDecodeError
 pub fn PowerLevels::required_for(Self, String, is_state~ : Bool) -> Int64
 pub fn PowerLevels::user_level(Self, String) -> Int64
 

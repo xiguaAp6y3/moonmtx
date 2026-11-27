@@ -11,7 +11,7 @@ on every MoonBit target and works with any HTTP client. A native transport
 based on `moonbitlang/async` is included.
 
 Targets the [Matrix specification v1.19](https://spec.matrix.org/v1.19/client-server-api/).
-Status: 0.1.0 published on [mooncakes.io](https://mooncakes.io/docs/xiguaAp6y3/moonmtx). See [docs/ROADMAP.md](docs/ROADMAP.md).
+Status: 0.1.1 published on [mooncakes.io](https://mooncakes.io/docs/xiguaAp6y3/moonmtx). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## What it does
 
@@ -123,8 +123,8 @@ moon fmt
 ```
 
 Enable the pre-commit hook with `git config core.hooksPath .githooks`.
-The toolchain is pinned to the locally validated `0.10.20+65efd5b93` in CI,
-with `moonbitlang/async@0.22.4`. Revalidate both when upgrading.
+The toolchain is pinned to the locally validated `1.0.0-rc1+3c0520448` in CI,
+with `moonbitlang/async@0.22.11`. Revalidate both when upgrading.
 
 ## Interop check
 

@@ -226,7 +226,7 @@ test "login: session parse and storage round trip" {
   assert_eq(s.refresh_token, Some("def456"))
   assert_eq(s.expires_in_ms, Some(60000L))
   assert_eq(s.homeserver, Some("https://example.org"))
-  let back : @api.Session = @json.from_json(s.to_json())
+  let back : @api.Session = @json.from_json(ToJson::to_json(s))
   assert_true(back == s)
   let bad = @api.Response::new(
     200, "{\"access_token\":\"x\",\"device_id\":\"D\",\"user_id\":\"nope\"}",

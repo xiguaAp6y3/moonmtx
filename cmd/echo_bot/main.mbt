@@ -19,7 +19,7 @@ fn env(name : String) -> String raise {
 
 ///|
 async fn save(path : String, session : @api.Session, snapshot : Json) -> Unit {
-  let doc : Json = { "session": session.to_json(), "client": snapshot }
+  let doc : Json = { "session": ToJson::to_json(session), "client": snapshot }
   let tmp = path + ".tmp"
   @fs.write_file(
     tmp,

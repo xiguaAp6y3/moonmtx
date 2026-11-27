@@ -1,7 +1,6 @@
 import {
   "moonbitlang/core/env",
   "moonbitlang/core/json",
-  "moonbitlang/async",
   "xiguaAp6y3/moonmtx/ids",
   "xiguaAp6y3/moonmtx/api",
   "xiguaAp6y3/moonmtx/events",

@@ -28,8 +28,8 @@ of `matrix-org/matrix-spec`. No fixture files are copied verbatim.
 
 | Module | Version | License | Used by |
 | --- | --- | --- | --- |
-| `moonbitlang/core` | toolchain 0.10.20 | Apache-2.0 | all packages |
-| `moonbitlang/async` | 0.22.4 | Apache-2.0 | `transport`, `cmd/echo_bot` (native only) |
+| `moonbitlang/core` | toolchain 1.0.0-rc1+3c0520448 | Apache-2.0 | all packages |
+| `moonbitlang/async` | 0.22.11 | Apache-2.0 | `transport`, `cmd/echo_bot` (native only) |
 
 ## Related projects
 
